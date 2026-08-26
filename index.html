@@ -11,7 +11,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
     --font-main: 'Nunito', -apple-system, sans-serif;
@@ -476,6 +475,13 @@
                     <button class="btn-view-all" onclick="openDetailsModal('qty')">Ver Listado</button>
                 </div>
                 <div class="chart-wrap-inner" title="Haz clic en una porción para ver el detalle"><canvas id="chart-qty"></canvas></div>
+            </div>
+            <div class="chart-box">
+                <div class="chart-header">
+                    <h3>💰 Mayor Salida (Costo Movido)</h3>
+                    <button class="btn-view-all" onclick="openDetailsModal('val')">Ver Listado</button>
+                </div>
+                <div class="chart-wrap-inner" title="Haz clic en una porción para ver el detalle"><canvas id="chart-val"></canvas></div>
             </div>
             <div class="chart-box">
                 <div class="chart-header">
@@ -1344,7 +1350,7 @@ function updateDashboardKPIs(processedResult) {
 
   const topQty = [...PROCESSED_DATA].sort((a,b) => b.consumos_negativos - a.consumos_negativos).slice(0, 10); renderPieChart('chart-qty', topQty.map(p => `[${p.codigo}] ${truncateString(p.descripcion, 30)}`), topQty.map(p => p.consumos_negativos), PIE_COLORS);
   const topCost = [...PROCESSED_DATA].sort((a,b) => (b.consumos_negativos * b.precio_unitario) - (a.consumos_negativos * a.precio_unitario)).slice(0, 10); renderPieChart('chart-val', topCost.map(p => `[${p.codigo}] ${truncateString(p.descripcion, 30)}`), topCost.map(p => p.consumos_negativos * p.precio_unitario), PIE_COLORS);
-  const topVs = [...PROCESSED_DATA].sort((a,b) => (b.total_comprado + b.consumos_negativos) - (a.total_comprado + a.consumos_negativos)).slice(0, 10); renderBarChart('chart-flow', topVs.map(p => truncateString(`[${p.codigo}] ${p.descripcion}`, 25)), topVs.map(p => p.total_comprado), 'Comprado', getCssVar('--text-tertiary'), topVs.map(p => p.consumos_negativos), 'Salidas', getCssVar('--accent'));
+  const topVs = [...PROCESSED_DATA].sort((a,b) => (b.total_comprado + b.consumos_negativos) - (a.total_comprado + a.consumos_negativos)).slice(0, 10); renderBarChart('chart-flow', topVs.map(p => truncateString(`[${p.codigo}] ${p.descripcion}`, 25)), topVs.map(p => p.total_comprado), 'Comprado', getCssVar('--text-tertiary', '#5c84a8'), topVs.map(p => p.consumos_negativos), 'Salidas', getCssVar('--accent', '#a5c4d4'));
   
   const tlLabelsRaw = Array.from(timelineMap.keys()).sort(); 
   const tlLabels = tlLabelsRaw.map(k => {
@@ -1353,7 +1359,7 @@ function updateDashboardKPIs(processedResult) {
       return k;
   });
   const tlData = tlLabelsRaw.map(k => timelineMap.get(k)); 
-  renderLineChart('chart-timeline', tlLabels, tlData, 'Frecuencia de Salidas', getCssVar('--accent'), tlLabelsRaw);
+  renderLineChart('chart-timeline', tlLabels, tlData, 'Frecuencia de Salidas', getCssVar('--accent', '#a5c4d4'), tlLabelsRaw);
   
   // Procesar TOP 10 Solicitantes
   const buyersMap = new Map();
