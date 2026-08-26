@@ -20,57 +20,66 @@
   }
 
   /* ==============================================================
-     TEMA ADMINISTRADORA (Paleta de Azules Profundos) 
+     SISTEMA DE 6 TEMAS PROFESIONALES
      ============================================================== */
-  body[data-theme="admin"] {
-    --bg: #141c2c;              
-    --surface: #1e3150;         
-    --surface2: #243c60;        
-    --border: #33507b;          
-    --border-light: rgba(165, 196, 212, 0.15);
-    
-    --text: #eef4f8;            
-    --text-muted: #a5c4d4;      
-    --text-tertiary: #5c84a8;   
-    
-    --accent: #a5c4d4;          
-    --accent2: #dae8f0;         
-    --accent-glow: rgba(165, 196, 212, 0.15);
-    
-    --sys-green: #4ade80;
-    --sys-yellow: #facc15;
-    --sys-orange: #fb923c;
-    --sys-red: #f87171;
-    
+  /* 1. CORPORATE BLUE (Default Admin) */
+  body[data-theme="corporate"] {
+    --bg: #141c2c; --surface: #1e3150; --surface2: #243c60; --border: #33507b; --border-light: rgba(165, 196, 212, 0.15);
+    --text: #eef4f8; --text-muted: #a5c4d4; --text-tertiary: #5c84a8;
+    --accent: #38bdf8; --accent-glow: rgba(56, 189, 248, 0.2);
+    --sys-green: #4ade80; --sys-yellow: #facc15; --sys-orange: #fb923c; --sys-red: #f87171;
     --chart-1: #38bdf8; --chart-2: #4ade80; --chart-3: #facc15; --chart-4: #f87171; --chart-5: #a78bfa; 
     --chart-6: #fb923c; --chart-7: #a5c4d4; --chart-8: #818cf8; --chart-9: #34d399; --chart-10:#eef4f8; 
   }
 
-  /* ==============================================================
-     TEMA INMOBILIARIA (Paleta Verde Fthalo / Beige)
-     ============================================================== */
-  body[data-theme="inmob"] {
-    --bg: #0b1411;              
-    --surface: #121e18;         
-    --surface2: #1a2c23;        
-    --border: #2d4a3b;          
-    --border-light: rgba(229, 222, 206, 0.1);
-    
-    --text: #fdfbf7;            
-    --text-muted: #e5dece;      
-    --text-tertiary: #84968c;   
-    
-    --accent: #b39266;          
-    --accent2: #d4b58e;         
-    --accent-glow: rgba(179, 146, 102, 0.15);
-    
-    --sys-green: #34d399;
-    --sys-yellow: #fcd34d;
-    --sys-orange: #fb923c;
-    --sys-red: #ef4444;
-    
+  /* 2. FOREST GOLD (Default Inmob) */
+  body[data-theme="forest"] {
+    --bg: #0b1411; --surface: #121e18; --surface2: #1a2c23; --border: #2d4a3b; --border-light: rgba(229, 222, 206, 0.1);
+    --text: #fdfbf7; --text-muted: #e5dece; --text-tertiary: #84968c;
+    --accent: #b39266; --accent-glow: rgba(179, 146, 102, 0.2);
+    --sys-green: #34d399; --sys-yellow: #fcd34d; --sys-orange: #fb923c; --sys-red: #ef4444;
     --chart-1: #b39266; --chart-2: #34d399; --chart-3: #fcd34d; --chart-4: #fb923c; --chart-5: #ef4444; 
     --chart-6: #38bdf8; --chart-7: #a3e635; --chart-8: #e5dece; --chart-9: #f472b6; --chart-10:#818cf8; 
+  }
+
+  /* 3. OBSIDIAN (Alto Contraste) */
+  body[data-theme="obsidian"] {
+    --bg: #09090b; --surface: #18181b; --surface2: #27272a; --border: #3f3f46; --border-light: rgba(255, 255, 255, 0.1);
+    --text: #fafafa; --text-muted: #a1a1aa; --text-tertiary: #71717a;
+    --accent: #f4f4f5; --accent-glow: rgba(255, 255, 255, 0.15);
+    --sys-green: #22c55e; --sys-yellow: #eab308; --sys-orange: #f97316; --sys-red: #ef4444;
+    --chart-1: #fafafa; --chart-2: #a1a1aa; --chart-3: #52525b; --chart-4: #22c55e; --chart-5: #ef4444; 
+    --chart-6: #eab308; --chart-7: #3b82f6; --chart-8: #8b5cf6; --chart-9: #ec4899; --chart-10:#14b8a6; 
+  }
+
+  /* 4. TERRACOTTA (Cálido) */
+  body[data-theme="terracotta"] {
+    --bg: #1c1412; --surface: #2b1d19; --surface2: #3a2621; --border: #573932; --border-light: rgba(253, 186, 116, 0.1);
+    --text: #fffedd; --text-muted: #fdba74; --text-tertiary: #b4856f;
+    --accent: #f97316; --accent-glow: rgba(249, 115, 22, 0.2);
+    --sys-green: #34d399; --sys-yellow: #fcd34d; --sys-orange: #fb923c; --sys-red: #f87171;
+    --chart-1: #f97316; --chart-2: #fdba74; --chart-3: #fcd34d; --chart-4: #34d399; --chart-5: #f87171; 
+    --chart-6: #e879f9; --chart-7: #818cf8; --chart-8: #fffedd; --chart-9: #a3e635; --chart-10:#38bdf8; 
+  }
+
+  /* 5. OCEAN TEAL (Frío y Limpio) */
+  body[data-theme="ocean"] {
+    --bg: #081a20; --surface: #0d2933; --surface2: #123946; --border: #1d5b6e; --border-light: rgba(94, 234, 212, 0.1);
+    --text: #f0fdfa; --text-muted: #5eead4; --text-tertiary: #388e85;
+    --accent: #14b8a6; --accent-glow: rgba(20, 184, 166, 0.2);
+    --sys-green: #10b981; --sys-yellow: #fbbf24; --sys-orange: #f59e0b; --sys-red: #ef4444;
+    --chart-1: #14b8a6; --chart-2: #5eead4; --chart-3: #38bdf8; --chart-4: #818cf8; --chart-5: #c084fc; 
+    --chart-6: #10b981; --chart-7: #fbbf24; --chart-8: #f87171; --chart-9: #f0fdfa; --chart-10:#a3e635; 
+  }
+
+  /* 6. AMETHYST (Púrpura y Gris) */
+  body[data-theme="amethyst"] {
+    --bg: #15101f; --surface: #221a30; --surface2: #302444; --border: #4a3869; --border-light: rgba(192, 132, 252, 0.1);
+    --text: #faf5ff; --text-muted: #c084fc; --text-tertiary: #8b68b8;
+    --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.2);
+    --sys-green: #4ade80; --sys-yellow: #facc15; --sys-orange: #fb923c; --sys-red: #f87171;
+    --chart-1: #a855f7; --chart-2: #c084fc; --chart-3: #e879f9; --chart-4: #38bdf8; --chart-5: #4ade80; 
+    --chart-6: #facc15; --chart-7: #f87171; --chart-8: #fb923c; --chart-9: #faf5ff; --chart-10:#94a3b8; 
   }
   
   /* ==============================================================
@@ -81,7 +90,7 @@
     background: var(--bg); color: var(--text); font-family: var(--font-main); font-size: 13px; 
     height: 100vh; overflow: hidden;
     display: flex; flex-direction: column; 
-    transition: background 0.4s ease, color 0.4s ease; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease; -webkit-font-smoothing: antialiased;
   }
   
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -108,12 +117,15 @@
   
   .divider-v { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
 
+  .theme-select { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 4px 8px; font-size: 10px; font-weight: 600; cursor: pointer; outline: none; transition: 0.2s; height: 26px;}
+  .theme-select:focus { border-color: var(--accent); color: var(--accent); }
+
   .btn-upload { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; height: 26px;}
   .btn-upload:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
   
   .btn-clear { background: transparent; color: var(--sys-red); border: 1px solid transparent; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; text-transform: uppercase; height: 26px;}
   .btn-clear:hover { background: rgba(248, 113, 113, 0.15); border-color: rgba(248, 113, 113, 0.3); }
-  
+
   #upload-status { font-size: 10px; color: var(--text-muted); text-align: right; font-weight: 500; font-family: monospace;}
 
   /* CONTENIDO PRINCIPAL FLUIDO */
@@ -128,7 +140,7 @@
   .tab-btn { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border-light); border-bottom: none; padding: 8px 16px; border-radius: var(--radius-sm) var(--radius-sm) 0 0; cursor: pointer; font-weight: 600; font-size: 11px; transition: all 0.2s; position: relative;}
   .tab-btn:hover { color: var(--text); background: var(--surface2); }
   .tab-btn.active { color: var(--accent); background: var(--surface2); border-color: var(--accent); }
-  .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--accent); }
+  .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--accent); transition: background 0.4s ease; }
 
   /* GESTIÓN DE TABS ACTIVOS */
   .tab-content { flex: 1; display: none; flex-direction: column; min-height: 0; }
@@ -142,7 +154,6 @@
   .filter-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
   .filter-group label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
   
-  /* Inputs y Dropdowns Slim */
   .dropdown-btn, .search-box input, .pl-select, .pl-input, .local-sort { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 10px; height: 32px; font-size: 11px; color: var(--text); font-weight: 500; text-align: left; cursor: pointer; transition: all 0.2s; outline: none; width: 100%; display: flex; align-items: center;}
   .dropdown-btn { justify-content: space-between; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dropdown-btn:hover, .search-box input:focus, .pl-select:focus, .pl-input:focus { border-color: var(--accent); }
@@ -159,7 +170,6 @@
   .dropdown-search input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; height: 28px; color: var(--text); font-size: 11px; outline: none; }
   .dropdown-search input:focus { border-color: var(--accent); }
 
-  /* Custom Toggle Switch Slim */
   .toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border-light); height: 32px;}
   .toggle-labels { display: flex; flex-direction: column; justify-content: center;}
   input[type="checkbox"].ios-switch { appearance: none; width: 30px; height: 16px; background: var(--border); border-radius: 20px; position: relative; cursor: pointer; outline: none; transition: background 0.3s; flex-shrink: 0; margin: 0;}
@@ -188,7 +198,6 @@
   .kpi-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -0.5px; font-family: monospace;}
   .kpi-sub { font-size: 10px; color: var(--text-muted); margin-top: 10px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); display: inline-block;}
   .kpi-icon { position: absolute; right: 16px; top: 16px; font-size: 20px; opacity: 0.15; }
-  
   .clickable-sub { cursor: pointer; text-decoration: none; transition: opacity 0.2s;}
   .clickable-sub:hover { opacity: 0.7; }
 
@@ -278,7 +287,7 @@
   
   #tab-planificador .pl-container { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 8px 24px 24px;}
   .pl-table-wrap { flex: 1; overflow: auto; background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.15);}
-  .pl-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 1200px; }
+  .pl-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 1300px; }
   
   /* TH Sticky Planificador anclados a su caja */
   #tab-planificador th { background: var(--surface2); color: var(--text-muted); padding: 10px 12px; font-weight: 700; font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 10; box-shadow: inset 0 -1px 0 var(--border);}
@@ -321,7 +330,7 @@
   .empty { text-align: center; padding: 40px; color: var(--text-muted); font-size: 12px;}
 </style>
 </head>
-<body data-theme="admin">
+<body data-theme="corporate">
 
 <!-- CABECERA PRINCIPAL -->
 <div class="header">
@@ -332,6 +341,15 @@
   
   <div class="header-actions">
       <div class="action-row">
+          <select id="theme-selector" class="theme-select" onchange="changeTheme(this.value)" title="Cambiar Tema Visual">
+              <option value="corporate" selected>Corporate Blue</option>
+              <option value="forest">Forest Gold</option>
+              <option value="obsidian">Obsidian</option>
+              <option value="terracotta">Terracotta</option>
+              <option value="ocean">Ocean Teal</option>
+              <option value="amethyst">Amethyst</option>
+          </select>
+          <div class="divider-v"></div>
           <div style="display:flex; gap:2px;">
               <button id="btn-admin" class="btn-company active" onclick="setEmpresa('ADMIN')">🏢 Administradora</button>
               <button id="btn-inmob" class="btn-company" onclick="setEmpresa('INMOB')">🏘️ Inmobiliaria</button>
@@ -434,17 +452,26 @@
           <div class="charts-row">
             <div class="chart-box">
                 <div class="chart-header">
+                    <h3>📦 Distribución Capital ABC</h3>
+                </div>
+                <div class="chart-wrap-inner" title="Porcentaje del valor total de inventario por clase ABC"><canvas id="chart-abc"></canvas></div>
+            </div>
+            <div class="chart-box" style="flex: 2;">
+                <div class="chart-header">
+                    <h3>📊 Curva de Pareto: Valor de Consumos (Top 50)</h3>
+                    <button class="btn-view-all" onclick="openDetailsModal('val')">Ver Ranking Completo</button>
+                </div>
+                <div class="chart-wrap-inner" title="Regla 80/20: Analiza los productos de mayor impacto"><canvas id="chart-pareto"></canvas></div>
+            </div>
+          </div>
+          
+          <div class="charts-row">
+            <div class="chart-box">
+                <div class="chart-header">
                     <h3>📦 Mayor Salida (Unidades)</h3>
                     <button class="btn-view-all" onclick="openDetailsModal('qty')">Ver Listado</button>
                 </div>
                 <div class="chart-wrap-inner" title="Haz clic en una porción para ver el detalle"><canvas id="chart-qty"></canvas></div>
-            </div>
-            <div class="chart-box">
-                <div class="chart-header">
-                    <h3>💰 Mayor Salida (Costo Movido)</h3>
-                    <button class="btn-view-all" onclick="openDetailsModal('val')">Ver Listado</button>
-                </div>
-                <div class="chart-wrap-inner" title="Haz clic en una porción para ver el detalle"><canvas id="chart-val"></canvas></div>
             </div>
             <div class="chart-box">
                 <div class="chart-header">
@@ -620,7 +647,7 @@
               <label class="pl-label">Búsqueda rápida</label>
               <div style="display:flex; gap: 10px;">
                   <input type="text" id="pl-search-bar" class="pl-input" placeholder="Código o descripción..." style="flex: 1;">
-                  <button id="pl-clear-cache" class="btn-clear" style="height:32px; padding:0 16px; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3);" title="Borrar cantidades digitadas">🗑️ Limpiar Cant.</button>
+                  <button id="pl-clear-cache" class="btn-clear" style="height:28px; padding:0 16px; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3);" title="Borrar cantidades digitadas">🗑️ Limpiar Cant.</button>
               </div>
           </div>
       </div>
@@ -633,7 +660,8 @@
                   <tr>
                       <th style="width:110px;">Código</th>
                       <th style="width:300px;">Descripción Artículo</th>
-                      <th style="width:100px; text-align:right; color:var(--accent);">Prom. Mensual</th>
+                      <th style="width:100px; text-align:right; color:var(--accent);">Media Mensual</th>
+                      <th style="width:90px; text-align:center; color:var(--text-muted);">Frec. Recepción</th>
                       <th style="width:110px; text-align:right; color:var(--sys-yellow);">Sugerido</th>
                       <th style="width:100px; text-align:right;">Stock</th>
                       <th style="width:140px; text-align:center; background:var(--surface2);">Cant. a Solicitar</th>
@@ -682,8 +710,8 @@
             <th style="width:50px; text-align:center;">#</th>
             <th style="width:120px;">Código</th>
             <th>Descripción</th>
-            <th id="rm-col-3" style="text-align:right;">Métrica 1</th>
-            <th id="rm-col-4" style="text-align:right;">Métrica 2</th>
+            <th id="rm-col-3" style="text-align:right; cursor:pointer;" onclick="sortModal('col3')">Métrica 1 <span class="sort-icon">↕</span></th>
+            <th id="rm-col-4" style="text-align:right; cursor:pointer;" onclick="sortModal('col4')">Métrica 2 <span class="sort-icon">↕</span></th>
           </tr>
         </thead>
         <tbody id="rm-tbody"></tbody>
@@ -707,6 +735,9 @@ let GLOBAL_METADATA = new Map();
 let chartInstances = {};
 
 let currentLocalFilter = 'all'; let currentSearch = ''; let sortCol = 'codigo'; let sortAsc = true;
+
+// Estado Modal Sorting
+let modalData = []; let modalSortCol = 'col4'; let modalSortAsc = false; let currentModalType = '';
 
 // Estado dual para el Planificador de Compras
 let savedPlannerQtysAdmin = {}; let savedPlannerQtysInmob = {};
@@ -748,6 +779,12 @@ function updateChartColors() {
     PIE_COLORS[6] = getCssVar('--chart-7', '#a5c4d4'); PIE_COLORS[7] = getCssVar('--chart-8', '#818cf8'); PIE_COLORS[8] = getCssVar('--chart-9', '#34d399');
     PIE_COLORS[9] = getCssVar('--chart-10', '#eef4f8');
     Chart.defaults.color = getCssVar('--text-muted', '#a1a1aa');
+}
+
+function changeTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    updateChartColors();
+    if(PROCESSED_DATA.length > 0) applyGlobalFilters(); // Re-render charts
 }
 
 /* =====================================================================
@@ -798,10 +835,10 @@ function setEmpresa(empresa, force = false) {
    
    document.getElementById('btn-admin').classList.toggle('active', empresa === 'ADMIN');
    document.getElementById('btn-inmob').classList.toggle('active', empresa === 'INMOB');
-   document.body.setAttribute('data-theme', empresa === 'ADMIN' ? 'admin' : 'inmob');
    
-   void document.body.offsetWidth;
-   updateChartColors();
+   if(empresa === 'ADMIN') document.getElementById('theme-selector').value = 'corporate';
+   if(empresa === 'INMOB') document.getElementById('theme-selector').value = 'forest';
+   changeTheme(document.getElementById('theme-selector').value);
    
    RAW_EXCEL_ROWS = empresa === 'ADMIN' ? RAW_EXCEL_ADMIN : RAW_EXCEL_INMOB;
    PLANNER_DATA = empresa === 'ADMIN' ? PLANNER_DATA_ADMIN : PLANNER_DATA_INMOB;
@@ -853,6 +890,7 @@ function filterDropdownList(dropdownId, searchText) {
     if (isHiddenByFaceted) item.style.display = 'none'; else item.style.display = text.indexOf(filter) > -1 ? '' : 'none';
   });
 }
+
 function updateDropdownBtnText(groupId, listId, skipUpdate = false) {
   const btn = document.getElementById(`btn-${groupId}`); let vals = [];
   if (groupId === 'flt-comparador') { vals = SELECTED_COMPARADOR; } 
@@ -873,6 +911,7 @@ function updateDropdownBtnText(groupId, listId, skipUpdate = false) {
       else applyGlobalFilters(); 
   }
 }
+
 function updatePlannerDropdownText(groupId, listId) {
     const btn = document.getElementById(`btn-${groupId}`);
     const checkboxes = document.querySelectorAll(`#${listId} input[type="checkbox"]:checked`);
@@ -1006,7 +1045,6 @@ function buildGlobalMetadata() {
   allRows.forEach(row => {
     const codigoRaw = getCol(row, COL_CODIGO); if (!codigoRaw) return; const codigo = String(codigoRaw).trim();
     
-    // EXTRACCIÓN DIRECTA DESDE "Item Description" PRIMERO
     let currentDesc = ""; 
     const itemDescRaw = getCol(row, ['Item Description', 'Description', 'ItemDescription']);
     const descRaw = getCol(row, COL_DESC);
@@ -1037,7 +1075,6 @@ function buildGlobalMetadata() {
     }
   });
 
-  // Fallback final preventivo
   GLOBAL_METADATA.forEach((val, key) => {
       if (!val.descripcion || val.descripcion.trim() === "") { val.descripcion = key; }
   });
@@ -1155,7 +1192,8 @@ function renderPieChart(canvasId, labels, data, colors, hideLegend = false) {
                   label: function(ctx) { 
                       const p = PROCESSED_DATA[ctx.dataIndex]; 
                       const descCompleta = p ? p.descripcion : ctx.label;
-                      const valStr = canvasId === 'chart-val' ? ' $' + fmt(ctx.raw) : ' ' + fmt(ctx.raw) + ' un.';
+                      let valStr = ' ' + fmt(ctx.raw) + ' un.';
+                      if (canvasId === 'chart-val' || canvasId === 'chart-abc') valStr = ' $' + fmt(ctx.raw);
                       return `${descCompleta}: ${valStr}`; 
                   } 
               } 
@@ -1206,6 +1244,47 @@ function renderLineChart(canvasId, labels, data, labelName, color, rawLabels) {
   });
 }
 
+function renderParetoChart(canvasId, labels, barData, lineData, barColor, lineColor) {
+    if(chartInstances[canvasId]) chartInstances[canvasId].destroy(); const ctx = document.getElementById(canvasId).getContext('2d');
+    chartInstances[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { type: 'line', label: '% Acumulado', data: lineData, borderColor: lineColor, backgroundColor: 'transparent', borderWidth: 2, yAxisID: 'y1', pointRadius: 2, pointHoverRadius: 5 },
+                { type: 'bar', label: 'Costo Movido ($)', data: barData, backgroundColor: barColor, borderRadius: 2, yAxisID: 'y' }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            onClick: (e, elements, chart) => { 
+                if (elements.length > 0) { 
+                    const match = chart.data.labels[elements[0].index].match(/^\[(.*?)\]/); 
+                    if (match) showProductModal(match[1]); 
+                } 
+            },
+            onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+            plugins: { 
+                legend: { position: 'top', labels: { color: getCssVar('--text'), font: {size: 10}, boxWidth: 10 } },
+                tooltip: { 
+                    backgroundColor: getCssVar('--surface2'), borderColor: getCssVar('--border'), borderWidth: 0.5, titleColor: getCssVar('--text'), bodyColor: getCssVar('--text'), padding: 10, cornerRadius: 8,
+                    callbacks: {
+                        label: function(ctx) {
+                            if(ctx.datasetIndex === 0) return ` ${ctx.raw.toFixed(1)}%`;
+                            return ` $${fmt(ctx.raw)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { ticks: { display: false }, grid: { display: false } },
+                y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: getCssVar('--text-muted'), font:{size:9}, callback: function(val) { return '$' + fmt(val/1000000) + 'M'; } } },
+                y1: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: 0, max: 100, ticks: { color: lineColor, font:{size:9}, callback: function(val) { return val + '%'; } } }
+            }
+        }
+    });
+}
+
 function updateDashboardKPIs(processedResult) {
   updateChartColors(); 
   PROCESSED_DATA = processedResult.finalData;
@@ -1215,11 +1294,16 @@ function updateDashboardKPIs(processedResult) {
   else { document.getElementById('header-period').textContent = `No hay datos en el rango/filtros seleccionados.`; }
 
   let valorTotal = 0, valorEstancado = 0; let salidasTotal = 0, comprasTotal = 0; let estancadosCount = 0, criticosCount = 0;
+  let valA = 0, valB = 0, valC = 0;
 
   PROCESSED_DATA.forEach(p => { 
       valorTotal += p.valor_inventario; salidasTotal += p.consumos_negativos; comprasTotal += p.total_comprado;
       if (p.sin_movimiento_6m) { estancadosCount++; valorEstancado += p.valor_inventario; }
       if (!p.sin_movimiento_6m && p.venta_prom_mensual > 0 && p.stock_actual < p.venta_prom_mensual) criticosCount++;
+      
+      if(p.abc === 'A') valA += p.valor_inventario;
+      else if(p.abc === 'B') valB += p.valor_inventario;
+      else valC += p.valor_inventario;
   });
 
   let totalSkus = PROCESSED_DATA.length;
@@ -1241,9 +1325,20 @@ function updateDashboardKPIs(processedResult) {
 
   document.getElementById('welcome-message').classList.add('hidden'); document.getElementById('main-content').classList.remove('hidden');
 
+  // Chart: Distribución Capital ABC
+  renderPieChart('chart-abc', ['Clase A', 'Clase B', 'Clase C'], [valA, valB, valC], [getCssVar('--sys-green'), getCssVar('--sys-yellow'), getCssVar('--text-muted')], false);
+
+  // Chart: Pareto
+  const paretoData = [...PROCESSED_DATA].sort((a,b) => (b.consumos_negativos * b.precio_unitario) - (a.consumos_negativos * a.precio_unitario)).slice(0, 50).filter(p => p.consumos_negativos > 0);
+  const paretoLabels = paretoData.map(p => `[${p.codigo}] ${truncateString(p.descripcion, 20)}`);
+  const paretoBars = paretoData.map(p => p.consumos_negativos * p.precio_unitario);
+  const paretoTotal = paretoBars.reduce((a,b) => a+b, 0);
+  let acc = 0; const paretoLine = paretoBars.map(v => { acc += v; return (acc/paretoTotal)*100; });
+  renderParetoChart('chart-pareto', paretoLabels, paretoBars, paretoLine, getCssVar('--surface2'), getCssVar('--accent'));
+
   const topQty = [...PROCESSED_DATA].sort((a,b) => b.consumos_negativos - a.consumos_negativos).slice(0, 10); renderPieChart('chart-qty', topQty.map(p => `[${p.codigo}] ${truncateString(p.descripcion, 30)}`), topQty.map(p => p.consumos_negativos), PIE_COLORS);
   const topCost = [...PROCESSED_DATA].sort((a,b) => (b.consumos_negativos * b.precio_unitario) - (a.consumos_negativos * a.precio_unitario)).slice(0, 10); renderPieChart('chart-val', topCost.map(p => `[${p.codigo}] ${truncateString(p.descripcion, 30)}`), topCost.map(p => p.consumos_negativos * p.precio_unitario), PIE_COLORS);
-  const topVs = [...PROCESSED_DATA].sort((a,b) => (b.total_comprado + b.consumos_negativos) - (a.total_comprado + a.consumos_negativos)).slice(0, 10); renderBarChart('chart-flow', topVs.map(p => truncateString(`[${p.codigo}] ${p.descripcion}`, 25)), topVs.map(p => p.total_comprado), 'Comprado', getCssVar('--text-tertiary', '#5c84a8'), topVs.map(p => p.consumos_negativos), 'Salidas', getCssVar('--accent', '#a5c4d4'));
+  const topVs = [...PROCESSED_DATA].sort((a,b) => (b.total_comprado + b.consumos_negativos) - (a.total_comprado + a.consumos_negativos)).slice(0, 10); renderBarChart('chart-flow', topVs.map(p => truncateString(`[${p.codigo}] ${p.descripcion}`, 25)), topVs.map(p => p.total_comprado), 'Comprado', getCssVar('--text-tertiary'), topVs.map(p => p.consumos_negativos), 'Salidas', getCssVar('--accent'));
   
   const tlLabelsRaw = Array.from(timelineMap.keys()).sort(); 
   const tlLabels = tlLabelsRaw.map(k => {
@@ -1252,7 +1347,7 @@ function updateDashboardKPIs(processedResult) {
       return k;
   });
   const tlData = tlLabelsRaw.map(k => timelineMap.get(k)); 
-  renderLineChart('chart-timeline', tlLabels, tlData, 'Frecuencia de Salidas', getCssVar('--accent', '#a5c4d4'), tlLabelsRaw);
+  renderLineChart('chart-timeline', tlLabels, tlData, 'Frecuencia de Salidas', getCssVar('--accent'), tlLabelsRaw);
   
   // Procesar TOP 10 Solicitantes
   const buyersMap = new Map();
@@ -1416,75 +1511,32 @@ function openTimelineModal(key, displayLabel) {
     document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
-function openDetailsModal(type) {
-    const thead = document.getElementById('rm-thead');
-    thead.innerHTML = `
-      <tr>
-        <th style="width:50px; text-align:center;">#</th>
-        <th style="width:120px;">Código</th>
-        <th>Descripción</th>
-        <th id="rm-col-3" style="text-align:right;">Métrica 1</th>
-        <th id="rm-col-4" style="text-align:right;">Métrica 2</th>
-      </tr>
-    `;
-
-    let sorted = []; let title = "", desc = "", col3 = "", col4 = "";
-    if(type === 'qty') {
-        title = "Ranking por Salidas (Unidades)"; desc = "Productos ordenados por mayor cantidad de unidades de salida."; 
-        col3 = "Stock Actual"; col4 = "Total Salidas";
-        sorted = [...PROCESSED_DATA].sort((a,b) => b.consumos_negativos - a.consumos_negativos).filter(p => p.consumos_negativos > 0);
-    } else if(type === 'val') {
-        title = "Ranking por Costo Movido"; desc = "Productos ordenados por el valor total de salidas ($)."; 
-        col3 = "Stock Actual"; col4 = "Costo Movido ($)";
-        sorted = [...PROCESSED_DATA].sort((a,b) => (b.consumos_negativos * b.precio_unitario) - (a.consumos_negativos * a.precio_unitario)).filter(p => p.consumos_negativos > 0);
-    } else if(type === 'flow') {
-        title = "Flujo Combinado (Compras + Salidas)"; desc = "Productos ordenados por volumen total de movimientos."; 
-        col3 = "Total Salidas"; col4 = "Total Compras";
-        sorted = [...PROCESSED_DATA].sort((a,b) => (b.total_comprado + b.consumos_negativos) - (a.total_comprado + a.consumos_negativos)).filter(p => (p.total_comprado + p.consumos_negativos) > 0);
-    } else if(type === 'kpi-total') {
-        title = "Detalle: Catálogo Activo"; desc = "Listado de todos los productos procesados en la vista actual."; 
-        col3 = "Estado Logístico"; col4 = "Stock Actual";
-        sorted = [...PROCESSED_DATA].sort((a,b) => b.stock_actual - a.stock_actual);
-    } else if(type === 'kpi-valor') {
-        title = "Detalle: Valor del Inventario"; desc = "Listado de productos con stock físico valorizado."; 
-        col3 = "Stock Actual"; col4 = "Valor Inv. ($)";
-        sorted = [...PROCESSED_DATA].sort((a,b) => b.valor_inventario - a.valor_inventario).filter(p => p.valor_inventario > 0);
-    } else if(type === 'kpi-flujo') {
-        title = "Detalle: Volumen de Consumo"; desc = "Listado de productos que registraron salidas en el período."; 
-        col3 = "Stock Actual"; col4 = "Total Salidas";
-        sorted = [...PROCESSED_DATA].sort((a,b) => b.consumos_negativos - a.consumos_negativos).filter(p => p.consumos_negativos > 0);
-    } else if(type === 'estancados') {
-        title = "Detalle: Productos Estancados"; desc = "Productos sin salidas registradas en los últimos 6 meses.";
-        col3 = "Últ. Consumo"; col4 = "Stock Actual";
-        sorted = [...PROCESSED_DATA].filter(p => p.sin_movimiento_6m).sort((a,b) => b.stock_actual - a.stock_actual);
-    } else if(type === 'criticos') {
-        title = "Detalle: Alertas Críticas"; desc = "Productos con stock actual por debajo de su promedio de consumo mensual.";
-        col3 = "Promedio Mensual"; col4 = "Stock Actual";
-        sorted = [...PROCESSED_DATA].filter(p => !p.sin_movimiento_6m && p.venta_prom_mensual > 0 && p.stock_actual < p.venta_prom_mensual).sort((a,b) => a.stock_actual - b.stock_actual);
-    } else if(type === 'inmovilizados') {
-        title = "Detalle: Capital Inmovilizado"; desc = "Valor del inventario de productos estancados (> 6 meses sin salidas).";
-        col3 = "Stock Actual"; col4 = "Valor Inv. ($)";
-        sorted = [...PROCESSED_DATA].filter(p => p.sin_movimiento_6m && p.valor_inventario > 0).sort((a,b) => b.valor_inventario - a.valor_inventario);
-    }
-    
-    document.getElementById('rm-title').textContent = title; document.getElementById('rm-desc').textContent = desc;
-    document.getElementById('rm-col-3').textContent = col3; document.getElementById('rm-col-4').textContent = col4;
-    
+// LOGICA DE ORDENAMIENTO EN MODAL
+function renderModalTable() {
     const tbody = document.getElementById('rm-tbody');
+    
+    const sorted = [...modalData].sort((a,b) => {
+        let valA = a[modalSortCol]; let valB = b[modalSortCol];
+        if(typeof valA === 'string') { valA = valA.toLowerCase(); valB = String(valB).toLowerCase(); }
+        if(valA < valB) return modalSortAsc ? -1 : 1;
+        if(valA > valB) return modalSortAsc ? 1 : -1;
+        return 0;
+    });
+
     tbody.innerHTML = sorted.map((p, i) => {
         let val3 = "", val4 = "";
-        if(type === 'qty') { val3 = fmt(p.stock_actual); val4 = fmt(p.consumos_negativos) + ' un.'; }
-        else if(type === 'val') { val3 = fmt(p.stock_actual); val4 = fmtCLPFull(p.consumos_negativos * p.precio_unitario); }
-        else if(type === 'flow') { val3 = fmt(p.consumos_negativos); val4 = fmt(p.total_comprado); }
-        else if(type === 'kpi-total') { 
+        if(currentModalType === 'qty') { val3 = fmt(p.stock_actual); val4 = fmt(p.consumos_negativos) + ' un.'; }
+        else if(currentModalType === 'val') { val3 = fmt(p.stock_actual); val4 = fmtCLPFull(p.consumos_negativos * p.precio_unitario); }
+        else if(currentModalType === 'flow') { val3 = fmt(p.consumos_negativos); val4 = fmt(p.total_comprado); }
+        else if(currentModalType === 'kpi-total') { 
             val3 = p.sin_movimiento_6m ? '<span style="color:var(--sys-red); font-weight:600;">Estancado</span>' : (p.venta_prom_mensual>0 && p.stock_actual<p.venta_prom_mensual ? '<span style="color:var(--sys-orange); font-weight:600;">Crítico</span>' : '<span style="color:var(--sys-green); font-weight:600;">Sano</span>'); 
             val4 = fmt(p.stock_actual); 
         }
-        else if(type === 'kpi-valor') { val3 = fmt(p.stock_actual); val4 = fmtCLPFull(p.valor_inventario); }
-        else if(type === 'kpi-flujo') { val3 = fmt(p.stock_actual); val4 = fmt(p.consumos_negativos) + ' un.'; }
-        else if(type === 'estancados') { val3 = p.ultimo_consumo; val4 = fmt(p.stock_actual); }
-        else if(type === 'criticos') { val3 = fmt(p.venta_prom_mensual); val4 = `<span style="color:var(--sys-red); font-weight:800;">${fmt(p.stock_actual)}</span>`; }
-        else if(type === 'inmovilizados') { val3 = fmt(p.stock_actual); val4 = `<span style="color:var(--sys-red); font-weight:800;">${fmtCLPFull(p.valor_inventario)}</span>`; }
+        else if(currentModalType === 'kpi-valor') { val3 = fmt(p.stock_actual); val4 = fmtCLPFull(p.valor_inventario); }
+        else if(currentModalType === 'kpi-flujo') { val3 = fmt(p.stock_actual); val4 = fmt(p.consumos_negativos) + ' un.'; }
+        else if(currentModalType === 'estancados') { val3 = p.ultimo_consumo; val4 = fmt(p.stock_actual); }
+        else if(currentModalType === 'criticos') { val3 = fmt(p.venta_prom_mensual); val4 = `<span style="color:var(--sys-red); font-weight:800;">${fmt(p.stock_actual)}</span>`; }
+        else if(currentModalType === 'inmovilizados') { val3 = fmt(p.stock_actual); val4 = `<span style="color:var(--sys-red); font-weight:800;">${fmtCLPFull(p.valor_inventario)}</span>`; }
         
         return `<tr style="border-bottom: 1px solid var(--border-light); background: var(--surface);">
             <td style="text-align:center; color: var(--text-muted); font-size: 11px;">${i+1}</td>
@@ -1496,6 +1548,71 @@ function openDetailsModal(type) {
     }).join('');
     
     if(sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">No hay datos para mostrar.</td></tr>`; }
+}
+
+function sortModal(col) {
+    if (modalSortCol === col) modalSortAsc = !modalSortAsc; 
+    else { modalSortCol = col; modalSortAsc = false; }
+    
+    document.querySelectorAll('#rm-thead th').forEach(th => th.classList.remove('sorted'));
+    const activeTh = document.getElementById(`rm-${col}`);
+    if(activeTh) activeTh.classList.add('sorted');
+    
+    renderModalTable();
+}
+
+function openDetailsModal(type) {
+    currentModalType = type;
+    modalSortCol = 'col4'; modalSortAsc = false;
+
+    let title = "", desc = "", col3Label = "", col4Label = "";
+    
+    if(type === 'qty') {
+        title = "Ranking por Salidas (Unidades)"; desc = "Productos ordenados por mayor cantidad de unidades de salida."; 
+        col3Label = "Stock Actual"; col4Label = "Total Salidas";
+        modalData = [...PROCESSED_DATA].filter(p => p.consumos_negativos > 0).map(p => ({...p, col3: p.stock_actual, col4: p.consumos_negativos}));
+    } else if(type === 'val') {
+        title = "Ranking por Costo Movido"; desc = "Productos ordenados por el valor total de salidas ($)."; 
+        col3Label = "Stock Actual"; col4Label = "Costo Movido ($)";
+        modalData = [...PROCESSED_DATA].filter(p => p.consumos_negativos > 0).map(p => ({...p, col3: p.stock_actual, col4: p.consumos_negativos * p.precio_unitario}));
+    } else if(type === 'flow') {
+        title = "Flujo Combinado (Compras + Salidas)"; desc = "Productos ordenados por volumen total de movimientos."; 
+        col3Label = "Total Salidas"; col4Label = "Total Compras";
+        modalData = [...PROCESSED_DATA].filter(p => (p.total_comprado + p.consumos_negativos) > 0).map(p => ({...p, col3: p.consumos_negativos, col4: p.total_comprado}));
+    } else if(type === 'kpi-total') {
+        title = "Detalle: Catálogo Activo"; desc = "Listado de todos los productos procesados en la vista actual."; 
+        col3Label = "Estado Logístico"; col4Label = "Stock Actual";
+        modalData = [...PROCESSED_DATA].map(p => ({...p, col3: p.sin_movimiento_6m ? 'Z' : 'A', col4: p.stock_actual}));
+    } else if(type === 'kpi-valor') {
+        title = "Detalle: Valor del Inventario"; desc = "Listado de productos con stock físico valorizado."; 
+        col3Label = "Stock Actual"; col4Label = "Valor Inv. ($)";
+        modalData = [...PROCESSED_DATA].filter(p => p.valor_inventario > 0).map(p => ({...p, col3: p.stock_actual, col4: p.valor_inventario}));
+    } else if(type === 'kpi-flujo') {
+        title = "Detalle: Volumen de Consumo"; desc = "Listado de productos que registraron salidas en el período."; 
+        col3Label = "Stock Actual"; col4Label = "Total Salidas";
+        modalData = [...PROCESSED_DATA].filter(p => p.consumos_negativos > 0).map(p => ({...p, col3: p.stock_actual, col4: p.consumos_negativos}));
+    } else if(type === 'estancados') {
+        title = "Detalle: Productos Estancados"; desc = "Productos sin salidas registradas en los últimos 6 meses.";
+        col3Label = "Últ. Consumo"; col4Label = "Stock Actual";
+        modalData = [...PROCESSED_DATA].filter(p => p.sin_movimiento_6m).map(p => ({...p, col3: p.ultimo_consumo, col4: p.stock_actual}));
+    } else if(type === 'criticos') {
+        title = "Detalle: Alertas Críticas"; desc = "Productos con stock actual por debajo de su Media Mensual.";
+        col3Label = "Media Mensual"; col4Label = "Stock Actual";
+        modalData = [...PROCESSED_DATA].filter(p => !p.sin_movimiento_6m && p.venta_prom_mensual > 0 && p.stock_actual < p.venta_prom_mensual).map(p => ({...p, col3: p.venta_prom_mensual, col4: p.stock_actual}));
+    } else if(type === 'inmovilizados') {
+        title = "Detalle: Capital Inmovilizado"; desc = "Valor del inventario de productos estancados (> 6 meses sin salidas).";
+        col3Label = "Stock Actual"; col4Label = "Valor Inv. ($)";
+        modalData = [...PROCESSED_DATA].filter(p => p.sin_movimiento_6m && p.valor_inventario > 0).map(p => ({...p, col3: p.stock_actual, col4: p.valor_inventario}));
+    }
+    
+    document.getElementById('rm-title').textContent = title; document.getElementById('rm-desc').textContent = desc;
+    document.getElementById('rm-col-3').innerHTML = `${col3Label} <span class="sort-icon">↕</span>`; 
+    document.getElementById('rm-col-4').innerHTML = `${col4Label} <span class="sort-icon">↕</span>`;
+    
+    document.querySelectorAll('#rm-thead th').forEach(th => th.classList.remove('sorted'));
+    document.getElementById('rm-col-4').classList.add('sorted');
+    
+    renderModalTable();
     document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
@@ -1548,7 +1665,7 @@ function sortBy(col) { sortCol = col; sortAsc = false; renderTable(); }
 document.getElementById('search').addEventListener('input', e => { currentSearch = e.target.value; renderTable(); });
 
 function exportToExcel() {
-  const dataToExport = getLocalFiltered().map(p => ({ 'Clasificación ABC': p.abc, 'Código': p.codigo, 'Descripción': p.descripcion, 'Stock Actual': p.stock_actual, 'Total Salidas': p.consumos_negativos, 'Total Compras': p.total_comprado, 'Venta Prom. Mensual': Math.round(p.venta_prom_mensual), 'Último Consumo': p.ultimo_consumo, 'Valor Unitario ($)': p.precio_unitario, 'Valor Inventario Total ($)': p.valor_inventario, 'Días de Stock': p.dias_stock === 999 ? 'Exceso/Sin Salida' : Math.round(p.dias_stock), 'Días para OC': p.dias_para_oc !== null ? Math.round(p.dias_para_oc) : 'N/A', 'Qty Sugerida OC': p.qty_sugerida_oc, 'Sin Mov. 6 Meses': p.sin_movimiento_6m ? 'SÍ' : 'NO' }));
+  const dataToExport = getLocalFiltered().map(p => ({ 'Clasificación ABC': p.abc, 'Código': p.codigo, 'Descripción': p.descripcion, 'Stock Actual': p.stock_actual, 'Total Salidas': p.consumos_negativos, 'Total Compras': p.total_comprado, 'Media Mensual': Math.round(p.venta_prom_mensual), 'Último Consumo': p.ultimo_consumo, 'Valor Unitario ($)': p.precio_unitario, 'Valor Inventario Total ($)': p.valor_inventario, 'Días de Stock': p.dias_stock === 999 ? 'Exceso/Sin Salida' : Math.round(p.dias_stock), 'Días para OC': p.dias_para_oc !== null ? Math.round(p.dias_para_oc) : 'N/A', 'Qty Sugerida OC': p.qty_sugerida_oc, 'Sin Mov. 6 Meses': p.sin_movimiento_6m ? 'SÍ' : 'NO' }));
   if (dataToExport.length === 0) { alert('No hay datos para exportar.'); return; }
   const ws = XLSX.utils.json_to_sheet(dataToExport); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reporte_Inventario"); XLSX.writeFile(wb, `Reporte_Logistico_${CURRENT_EMPRESA === 'ADMIN' ? 'Admin' : 'Inmob'}.xlsx`);
 }
@@ -1716,18 +1833,27 @@ function extractPlannerDataFromGlobal() {
         const qty = parseFloat(getCol(row, COL_CANT)) || 0;
         const naturaleza = String(getCol(row, COL_NAT) || '').toUpperCase();
         const tipoMov = String(getCol(row, COL_MOV) || '').toUpperCase();
+        const tipoDoc = String(getCol(row, COL_DOC_TIPO) || '').trim();
         const dateRaw = parseExcelDate(getCol(row, COL_FECHA));
 
         let desc = GLOBAL_METADATA.has(code) ? GLOBAL_METADATA.get(code).descripcion : `Art. ${code}`;
         const key = code; 
 
         if (!map[key]) {
-            map[key] = { code: code, description: desc, stock: 0, monthlyConsumptions: {}, qKey: `PL__${code}` };
+            map[key] = { code: code, description: desc, stock: 0, monthlyConsumptions: {}, qKey: `PL__${code}`, receiptDates: [] };
             targetMonths.forEach(m => map[key].monthlyConsumptions[m.val] = 0);
         }
         
         map[key].stock += qty;
 
+        // Capturar Fecha de Recepción
+        if (tipoDoc.toUpperCase() === 'RECEPCIÓN DE COMPRA' || tipoDoc.toUpperCase() === 'RECEPCION DE COMPRA') {
+            if (dateRaw) {
+                map[key].receiptDates.push(dateRaw);
+            }
+        }
+
+        // Histórico Mensual Consumos
         if ((naturaleza === 'CONSUMO' || tipoMov === 'VENTA' || tipoMov.includes('NEGATIVO') || tipoMov === 'CONSUMO') && dateRaw) {
             const rowMonth = `${dateRaw.getFullYear()}-${String(dateRaw.getMonth()+1).padStart(2,'0')}`;
             if (map[key].monthlyConsumptions[rowMonth] !== undefined) {
@@ -1747,7 +1873,6 @@ function getPlannerEvaluatedData() {
     const suggestMonths = parseInt(document.getElementById('pl-suggest-months').value) || 3;
     const safetyMonths = parseInt(document.getElementById('pl-safety-stock').value) || 0;
     
-    // Multi-Select para Familias
     const famCheckboxes = document.querySelectorAll('#list-pl-familia input[type="checkbox"]:checked');
     const selectedFams = Array.from(famCheckboxes).map(cb => cb.value);
 
@@ -1769,6 +1894,18 @@ function getPlannerEvaluatedData() {
         p.avg = Math.ceil(sum / numMonths);
         p.sugerido = Math.max(0, Math.ceil((p.avg * (suggestMonths + safetyMonths)) - p.stock)); 
         
+        // Frecuencia de Recepción Matemática
+        p.receiptDates.sort((a, b) => a - b);
+        let avgDays = null;
+        if (p.receiptDates.length >= 2) {
+            const minDate = p.receiptDates[0];
+            const maxDate = p.receiptDates[p.receiptDates.length - 1];
+            const diffTime = Math.abs(maxDate - minDate);
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+            avgDays = diffDays / (p.receiptDates.length - 1);
+        }
+        p.avgReceiptDays = avgDays;
+
         if (selectedStock === "SIN_STOCK" && p.stock !== 0) return; if (selectedStock === "CON_STOCK" && p.stock === 0) return;
         if (selectedStatus === "CON_SUGERIDO" && p.sugerido === 0) return; if (selectedStatus === "STOCK_CRITICO" && p.stock >= p.avg) return;
 
@@ -1791,7 +1928,8 @@ function processAndRenderPlanner() {
             <th style="width:110px;">Código</th>
             <th style="width:300px;">Descripción Artículo</th>
             ${PLANNER_DATA.months.map(m => `<th style="width:80px; text-align:right; font-family:monospace; font-size:11px; color:var(--text-muted);">${m.label}</th>`).join('')}
-            <th style="width:100px; text-align:right; color:var(--accent);">Prom. Mensual<br><span style="font-size:9px;color:var(--text-tertiary);">(${numMonths} Meses)</span></th>
+            <th style="width:100px; text-align:right; color:var(--accent);">Media Mensual<br><span style="font-size:9px;color:var(--text-tertiary);">(${numMonths} Meses)</span></th>
+            <th style="width:90px; text-align:center; color:var(--text-muted);">Frec. Recepción<br><span style="font-size:9px;color:var(--text-tertiary);">(Días prom.)</span></th>
             <th style="width:110px; text-align:right; color:var(--sys-yellow);">Sugerido<br><span style="font-size:9px;color:var(--text-tertiary);">(${suggestMonths}M + ${safetyMonths}M Seg.)</span></th>
             <th style="width:100px; text-align:right;">Stock</th>
             <th style="width:140px; text-align:center; background:var(--surface2);">Cant. a Solicitar</th>
@@ -1805,12 +1943,15 @@ function processAndRenderPlanner() {
         const isUnderStock = p.stock < p.avg;
         const stockStyle = isUnderStock ? 'color:var(--sys-red); font-weight:700; background:rgba(248, 113, 113, 0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(248, 113, 113, 0.3);' : 'font-family:monospace; color:var(--text); font-weight:500;';
         const savedQty = PLANNER_DATA.requestedQtys[p.qKey] !== undefined ? PLANNER_DATA.requestedQtys[p.qKey] : '';
+        const avgReceiptStr = p.avgReceiptDays !== null ? `${Math.round(p.avgReceiptDays)} d` : 'N/A';
 
         return `<tr>
             <td style="font-family:monospace; font-weight:700; color:var(--text); letter-spacing:0.5px;">${p.code}</td>
             <td style="color:var(--text); font-weight:400;">${p.description}</td>
             ${mCells}
-            <td class="pl-prom">${p.avg.toLocaleString('es-ES')}</td><td class="pl-sug">${p.sugerido.toLocaleString('es-ES')}</td>
+            <td class="pl-prom">${p.avg.toLocaleString('es-ES')}</td>
+            <td style="text-align:center; font-family:monospace; font-size:11px; color:var(--text-muted);">${avgReceiptStr}</td>
+            <td class="pl-sug">${p.sugerido.toLocaleString('es-ES')}</td>
             <td style="text-align:right;"><span style="${stockStyle}">${p.stock.toLocaleString('es-ES')}</span></td>
             <td style="text-align:center; background:rgba(255,255,255,0.02); border-left:0.5px solid var(--border-light);">
                 <input type="number" min="0" placeholder="0" class="pl-qty-input" data-qkey="${p.qKey}" value="${savedQty}">
@@ -1868,7 +2009,7 @@ document.getElementById('pl-export-btn').addEventListener('click', () => {
 
     let headers = ["Código", "Descripción"];
     PLANNER_DATA.months.forEach(m => headers.push(m.label));
-    headers.push(`Prom. Mensual (${numMonths}M)`, "Sugerido Base", "Stock Actual", "CANT. TOTAL A SOLICITAR");
+    headers.push(`Media Mensual (${numMonths}M)`, "Frec. Recepción (Días)", "Sugerido Base", "Stock Actual", "CANT. TOTAL A SOLICITAR");
     
     for(let i=1; i<=suggestMonths; i++) { headers.push(`Llegada Mes ${i}`); }
     aoa.push(headers);
@@ -1884,7 +2025,7 @@ document.getElementById('pl-export-btn').addEventListener('click', () => {
                 row.push(p.monthlyConsumptions[m.val] || 0);
             });
             
-            row.push(p.avg, p.sugerido, p.stock, qty);
+            row.push(p.avg, p.avgReceiptDays !== null ? Math.round(p.avgReceiptDays) : 'N/A', p.sugerido, p.stock, qty);
             
             let basePerMonth = Math.floor(qty / suggestMonths);
             let remainder = qty % suggestMonths;
@@ -1938,7 +2079,7 @@ document.getElementById('excel-upload-admin').addEventListener('change', e => ha
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
 
 // INIT
-document.body.setAttribute('data-theme', 'admin');
+document.body.setAttribute('data-theme', 'corporate');
 updateChartColors();
 </script>
 </body>
