@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
     --font-main: 'Nunito', -apple-system, sans-serif;
@@ -111,14 +112,14 @@
   .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .action-row { display: flex; align-items: center; gap: 6px; background: var(--surface); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-light);}
   
+  .theme-select { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 4px 8px; font-size: 10px; font-weight: 600; cursor: pointer; outline: none; transition: 0.2s; height: 26px;}
+  .theme-select:focus { border-color: var(--accent); color: var(--accent); }
+
   .btn-company { background: transparent; color: var(--text-muted); border: none; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
   .btn-company:hover { color: var(--text); background: rgba(255,255,255,0.05); }
   .btn-company.active { background: var(--accent); color: var(--bg); box-shadow: 0 2px 10px var(--accent-glow); }
   
   .divider-v { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
-
-  .theme-select { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 4px 8px; font-size: 10px; font-weight: 600; cursor: pointer; outline: none; transition: 0.2s; height: 26px;}
-  .theme-select:focus { border-color: var(--accent); color: var(--accent); }
 
   .btn-upload { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; height: 26px;}
   .btn-upload:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
@@ -198,6 +199,7 @@
   .kpi-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -0.5px; font-family: monospace;}
   .kpi-sub { font-size: 10px; color: var(--text-muted); margin-top: 10px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); display: inline-block;}
   .kpi-icon { position: absolute; right: 16px; top: 16px; font-size: 20px; opacity: 0.15; }
+  
   .clickable-sub { cursor: pointer; text-decoration: none; transition: opacity 0.2s;}
   .clickable-sub:hover { opacity: 0.7; }
 
@@ -1045,6 +1047,7 @@ function buildGlobalMetadata() {
   allRows.forEach(row => {
     const codigoRaw = getCol(row, COL_CODIGO); if (!codigoRaw) return; const codigo = String(codigoRaw).trim();
     
+    // EXTRACCIÓN DIRECTA DESDE "Item Description" PRIMERO
     let currentDesc = ""; 
     const itemDescRaw = getCol(row, ['Item Description', 'Description', 'ItemDescription']);
     const descRaw = getCol(row, COL_DESC);
@@ -1075,6 +1078,7 @@ function buildGlobalMetadata() {
     }
   });
 
+  // Fallback final preventivo
   GLOBAL_METADATA.forEach((val, key) => {
       if (!val.descripcion || val.descripcion.trim() === "") { val.descripcion = key; }
   });
@@ -1873,6 +1877,7 @@ function getPlannerEvaluatedData() {
     const suggestMonths = parseInt(document.getElementById('pl-suggest-months').value) || 3;
     const safetyMonths = parseInt(document.getElementById('pl-safety-stock').value) || 0;
     
+    // Multi-Select para Familias
     const famCheckboxes = document.querySelectorAll('#list-pl-familia input[type="checkbox"]:checked');
     const selectedFams = Array.from(famCheckboxes).map(cb => cb.value);
 
