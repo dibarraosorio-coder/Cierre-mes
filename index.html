@@ -207,6 +207,10 @@
   .clickable-sub { cursor: pointer; text-decoration: none; transition: opacity 0.2s;}
   .clickable-sub:hover { opacity: 0.7; }
 
+  /* BOTÓN PARA OCULTAR/MOSTRAR GRÁFICOS AVANZADOS */
+  .btn-toggle-charts { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); padding: 8px 24px; border-radius: 20px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .btn-toggle-charts:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); transform: translateY(-2px); }
+
   .charts-section { padding: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
   .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   .chart-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column;}
@@ -455,7 +459,16 @@
         </div>
         
         <div class="charts-section">
-          <div class="charts-row">
+          
+          <!-- BOTÓN PARA MOSTRAR/OCULTAR GRÁFICOS AVANZADOS -->
+          <div style="display: flex; justify-content: center; width: 100%;">
+              <button id="btn-toggle-advanced" class="btn-toggle-charts" onclick="toggleAdvancedCharts()">
+                  Ver Análisis Avanzado (Pareto & ABC) ▼
+              </button>
+          </div>
+
+          <!-- FILA DE GRÁFICOS AVANZADOS (OCULTA POR DEFECTO) -->
+          <div class="charts-row hidden" id="advanced-charts-row">
             <div class="chart-box">
                 <div class="chart-header">
                     <h3>📦 Distribución Capital ABC</h3>
@@ -508,7 +521,7 @@
         <div class="charts-section" style="padding-top: 0;">
           <div class="chart-box">
               <div class="chart-header">
-                  <h3>🏆 Top 10 Solicitantes</h3>
+                  <h3>🏆 Solicitantes</h3>
               </div>
               <div class="chart-wrap-inner" style="overflow-y: auto; height: auto; max-height: 350px;">
                   <table class="top-table">
@@ -798,6 +811,21 @@ function changeTheme(themeName) {
     document.body.setAttribute('data-theme', themeName);
     updateChartColors();
     if(PROCESSED_DATA.length > 0) applyGlobalFilters(); // Re-render charts
+}
+
+function toggleAdvancedCharts() {
+    const row = document.getElementById('advanced-charts-row');
+    const btn = document.getElementById('btn-toggle-advanced');
+    if(row.classList.contains('hidden')) {
+        row.classList.remove('hidden');
+        btn.innerHTML = 'Ocultar Análisis Avanzado (Pareto & ABC) ▲';
+        // Resize fixing for Chart.js when unhiding containers
+        if(chartInstances['chart-abc']) chartInstances['chart-abc'].resize();
+        if(chartInstances['chart-pareto']) chartInstances['chart-pareto'].resize();
+    } else {
+        row.classList.add('hidden');
+        btn.innerHTML = 'Ver Análisis Avanzado (Pareto & ABC) ▼';
+    }
 }
 
 /* =====================================================================
@@ -1364,7 +1392,7 @@ function updateDashboardKPIs(processedResult) {
   const tlData = tlLabelsRaw.map(k => timelineMap.get(k)); 
   renderLineChart('chart-timeline', tlLabels, tlData, 'Frecuencia de Salidas', getCssVar('--accent'), tlLabelsRaw);
   
-  // Procesar TOP 10 Solicitantes
+  // Procesar Solicitantes
   const buyersMap = new Map();
   CURRENT_FILTERED_ROWS.forEach(row => {
       const tipoMov = String(getCol(row, COL_MOV) || '').trim().toUpperCase();
