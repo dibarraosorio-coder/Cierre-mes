@@ -1144,7 +1144,7 @@ function processData(jsonData, realStockMap) {
     }
     const prod = productsMap.get(codigo);
 
-    if (tipoMov.includes('COMPRA')) prod.total_comprado += Math.abs(cantidad);
+    if (tipoMov.includes('COMPRA')) prod.total_comprado += cantidad;
     else if (tipoMov === 'VENTA' || tipoMov.includes('NEGATIVO') || tipoMov === 'CONSUMO') {
       prod.consumos_negativos += Math.abs(cantidad);
       if (dateObj && (!prod.ultimo_consumo_fecha || dateObj > prod.ultimo_consumo_fecha)) prod.ultimo_consumo_fecha = dateObj;
@@ -1401,6 +1401,9 @@ function updateDashboardKPIs(processedResult) {
       if (tipoMov === 'VENTA' || tipoMov.includes('NEGATIVO') || tipoMov === 'CONSUMO' || naturaleza === 'CONSUMO') {
           let buyer = String(getCol(row, COL_COMP) || 'SIN ESPECIFICAR').trim().toUpperCase();
           if (!buyer) buyer = 'SIN ESPECIFICAR';
+
+          // NUEVA REGLA: Ocultar de la lista si el nombre contiene "AJUSTE"
+          if (buyer.includes('AJUSTE')) return;
 
           const qty = Math.abs(parseFloat(getCol(row, COL_CANT)) || 0);
           const code = String(getCol(row, COL_CODIGO) || '').trim();
@@ -1775,7 +1778,7 @@ function showProductModal(codigo) {
         const c = String(getCol(row, COL_CODIGO) || '').trim();
         if (c === codigo) {
             const mov = String(getCol(row, COL_MOV) || '').trim().toUpperCase(); const qty = parseFloat(getCol(row, COL_CANT)) || 0;
-            if (mov.includes('COMPRA')) compras += Math.abs(qty); else if (mov.includes('TRANSFERENCIA') || mov.includes('TRASLADO')) transf += Math.abs(qty);
+            if (mov.includes('COMPRA')) compras += qty; else if (mov.includes('TRANSFERENCIA') || mov.includes('TRASLADO')) transf += Math.abs(qty);
             else if (mov.includes('AJUSTE')) { if (mov.includes('NEGATIVO')) ajNeg += Math.abs(qty); else if (mov.includes('POSITIVO')) ajPos += Math.abs(qty); else { if (qty < 0) ajNeg += Math.abs(qty); else ajPos += Math.abs(qty); } }
         }
     });
@@ -2104,6 +2107,20 @@ function handleFile(file, type) {
                 const workbook = XLSX.read(data, {type: 'array', cellDates: true});
                 const parsedRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: null});
                 
+                // NUEVA REGLA: Interceptar datos y reasignar a PV2 si es Udeneg 05
+                parsedRows.forEach(row => {
+                    const ud = String(getCol(row, ['Udeneg code', 'Udeneg Code', 'UDENEG CODE', 'Udeneg', 'Centro de beneficio']) || '').trim();
+                    if (ud === '05' || ud.includes('05')) {
+                        // Cambiar prefijo de almacén de PAV a PV2
+                        for (let k of COL_ALMACEN) {
+                            if (row[k] !== undefined && row[k] !== null) {
+                                row[k] = String(row[k]).replace(/^PAV/i, 'PV2');
+                                break;
+                            }
+                        }
+                    }
+                });
+
                 if(parsedRows && parsedRows.length > 0) {
                     if (type === 'ADMIN') { RAW_EXCEL_ADMIN = parsedRows; }
                     else { RAW_EXCEL_INMOB = parsedRows; }
