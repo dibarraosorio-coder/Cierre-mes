@@ -34,14 +34,14 @@
     --chart-6: #fbb117; --chart-7: #4ade80; --chart-8: #2dd4bf; --chart-9: #94a3b8; --chart-10:#e2e8f0; 
   }
 
-  /* 2. ESCALA DE GRISES */
+  /* 2. ESCALA DE GRISES (Light Mode Minimalista) */
   body[data-theme="grayscale"] {
-    --bg: #0a0a0a; --surface: #171717; --surface2: #262626; --border: #404040; --border-light: rgba(64, 64, 64, 0.5);
-    --text: #f5f5f5; --text-muted: #a3a3a3; --text-tertiary: #737373;
-    --accent: #ffffff; --accent-glow: rgba(255, 255, 255, 0.15);
-    --sys-green: #4ade80; --sys-yellow: #facc15; --sys-orange: #fb923c; --sys-red: #ef4444;
-    --chart-1: #ffffff; --chart-2: #d4d4d8; --chart-3: #a1a1aa; --chart-4: #71717a; --chart-5: #52525b; 
-    --chart-6: #3f3f46; --chart-7: #27272a; --chart-8: #e4e4e7; --chart-9: #52525b; --chart-10:#a1a1aa; 
+    --bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5; --border: #dee2e6; --border-light: rgba(222, 226, 230, 0.5);
+    --text: #212529; --text-muted: #495057; --text-tertiary: #868e96;
+    --accent: #343a40; --accent-glow: rgba(52, 58, 64, 0.15);
+    --sys-green: #2b8a3e; --sys-yellow: #f59f00; --sys-orange: #d9480f; --sys-red: #c92a2a;
+    --chart-1: #212529; --chart-2: #495057; --chart-3: #868e96; --chart-4: #ced4da; --chart-5: #adb5bd; 
+    --chart-6: #e9ecef; --chart-7: #343a40; --chart-8: #f1f3f5; --chart-9: #f8f9fa; --chart-10:#dee2e6; 
   }
 
   /* 3. AZUL, ROJO Y BLANCO (Tonalidades suaves / Claro) */
@@ -54,14 +54,14 @@
     --chart-6: #fca5a5; --chart-7: #bfdbfe; --chart-8: #fecaca; --chart-9: #2563eb; --chart-10:#dc2626; 
   }
 
-  /* 4. ROSADO PASTEL (Claro) */
+  /* 4. ROSADO PASTEL (Desaturado y Elegante) */
   body[data-theme="pastel-pink"] {
-    --bg: #fff0f3; --surface: #ffe5ec; --surface2: #ffc2d1; --border: #ffb3c6; --border-light: rgba(255, 179, 198, 0.5);
-    --text: #590d22; --text-muted: #800f2f; --text-tertiary: #a4133c;
-    --accent: #ff4d6d; --accent-glow: rgba(255, 77, 109, 0.2);
-    --sys-green: #10b981; --sys-yellow: #f59e0b; --sys-orange: #f97316; --sys-red: #ef4444;
-    --chart-1: #ff4d6d; --chart-2: #ff758f; --chart-3: #ff8fa3; --chart-4: #ffb3c6; --chart-5: #ffc2d1; 
-    --chart-6: #c9184a; --chart-7: #a4133c; --chart-8: #800f2f; --chart-9: #590d22; --chart-10:#ff4d6d; 
+    --bg: #fdf8f9; --surface: #ffffff; --surface2: #fceef1; --border: #f8d7da; --border-light: rgba(248, 215, 218, 0.5);
+    --text: #4a3b3d; --text-muted: #857476; --text-tertiary: #b5a4a6;
+    --accent: #d97a8c; --accent-glow: rgba(217, 122, 140, 0.15);
+    --sys-green: #52b788; --sys-yellow: #e9c46a; --sys-orange: #f4a261; --sys-red: #e56b6f;
+    --chart-1: #d97a8c; --chart-2: #e5989b; --chart-3: #ffb5a7; --chart-4: #fcd5ce; --chart-5: #f8edeb; 
+    --chart-6: #b5838d; --chart-7: #e0b1cb; --chart-8: #f4acb7; --chart-9: #ffcad4; --chart-10:#ffe5ec; 
   }
   
   /* ==============================================================
@@ -1383,7 +1383,7 @@ function updateDashboardKPIs(processedResult) {
           let buyer = String(getCol(row, COL_COMP) || 'SIN ESPECIFICAR').trim().toUpperCase();
           if (!buyer) buyer = 'SIN ESPECIFICAR';
 
-          // NUEVA REGLA: Ocultar de la lista si el nombre contiene "AJUSTE"
+          // Ocultar de la lista si el nombre contiene "AJUSTE"
           if (buyer.includes('AJUSTE')) return;
 
           const qty = Math.abs(parseFloat(getCol(row, COL_CANT)) || 0);
