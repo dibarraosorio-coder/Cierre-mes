@@ -332,7 +332,10 @@
   .modal-body.no-pad { padding: 0; overflow-y: auto; flex: 1; border-radius: 0 0 var(--radius-lg) var(--radius-lg);}
   
   .modal-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .modal-kpi { background: var(--bg); padding: 12px; border-radius: var(--radius-md); display: flex; flex-direction: column; border: 1px solid var(--border);}
+  .modal-kpi { background: var(--bg); padding: 12px; border-radius: var(--radius-md); display: flex; flex-direction: column; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; position: relative; }
+  .modal-kpi:hover { border-color: var(--accent); background: var(--surface2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+  .modal-kpi::after { content: '🔍 VER DETALLE'; position: absolute; top: 12px; right: 12px; font-size: 8px; font-weight: 800; color: var(--accent); opacity: 0; transition: opacity 0.2s; }
+  .modal-kpi:hover::after { opacity: 1; }
   .modal-kpi span { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; font-weight: 800; letter-spacing: 0.5px; }
   .modal-kpi strong { font-size: 18px; color: var(--text); font-weight: 800; font-family: monospace;}
   .modal-kpi.full { grid-column: span 2; }
@@ -1783,11 +1786,97 @@ function showProductModal(codigo) {
         }
     });
     const prodData = PROCESSED_DATA.find(p => p.codigo === codigo); const stockActual = prodData ? prodData.stock_actual : 0;
-    document.getElementById('m-stock').textContent = fmt(stockActual); document.getElementById('m-compras').textContent = fmt(compras);
-    document.getElementById('m-ajustes-pos').textContent = fmt(ajPos); document.getElementById('m-ajustes-neg').textContent = fmt(ajNeg); document.getElementById('m-transf').textContent = fmt(transf);
+    
+    document.getElementById('m-stock').textContent = fmt(stockActual); 
+    document.getElementById('m-compras').textContent = fmt(compras);
+    document.getElementById('m-ajustes-pos').textContent = fmt(ajPos); 
+    document.getElementById('m-ajustes-neg').textContent = fmt(ajNeg); 
+    document.getElementById('m-transf').textContent = fmt(transf);
+
+    // NUEVO: Asignar eventos onClick a las cajas del modal
+    document.querySelector('.m-stock').onclick = () => openMovementDetails(codigo, 'stock');
+    document.querySelector('.m-comp').onclick = () => openMovementDetails(codigo, 'compras');
+    document.querySelector('.m-tra').onclick = () => openMovementDetails(codigo, 'transferencias');
+    document.querySelector('.m-ajp').onclick = () => openMovementDetails(codigo, 'ajustes-pos');
+    document.querySelector('.m-ajn').onclick = () => openMovementDetails(codigo, 'ajustes-neg');
+
     document.getElementById('product-modal').classList.remove('hidden');
 }
+
 function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
+
+function openMovementDetails(codigo, tipo) {
+    let details = [];
+    
+    // Extraer y filtrar las filas exactas
+    CURRENT_FILTERED_ROWS.forEach(row => {
+        const c = String(getCol(row, COL_CODIGO) || '').trim();
+        if (c === codigo) {
+            const mov = String(getCol(row, COL_MOV) || '').trim().toUpperCase(); 
+            const qty = parseFloat(getCol(row, COL_CANT)) || 0;
+            const dateObj = parseExcelDate(getCol(row, COL_FECHA));
+            const dateStr = dateObj ? dateObj.toLocaleDateString('es-CL') : 'Sin Fecha';
+            const doc = String(getCol(row, COL_DOC_NUM) || 'S/N').trim();
+            const buyer = String(getCol(row, COL_COMP) || 'SIN ESPECIFICAR').trim();
+
+            let include = false;
+            // Reglas lógicas para agrupar los movimientos tal como se calcularon en el resumen
+            if (tipo === 'compras' && mov.includes('COMPRA')) include = true;
+            else if (tipo === 'transferencias' && (mov.includes('TRANSFERENCIA') || mov.includes('TRASLADO'))) include = true;
+            else if (tipo === 'ajustes-pos' && mov.includes('AJUSTE') && !mov.includes('NEGATIVO') && (mov.includes('POSITIVO') || qty >= 0)) include = true;
+            else if (tipo === 'ajustes-neg' && mov.includes('AJUSTE') && (mov.includes('NEGATIVO') || qty < 0)) include = true;
+            else if (tipo === 'stock') include = true; // Stock actual muestra todos los movimientos del período
+
+            if (include) { details.push({ dateObj, dateStr, doc, mov, qty, buyer }); }
+        }
+    });
+
+    // Ordenar de la transacción más reciente a la más antigua
+    details.sort((a, b) => (b.dateObj || 0) - (a.dateObj || 0));
+
+    const titles = {
+        'stock': 'Historial Completo (Período)', 'compras': 'Detalle de Compras', 'transferencias': 'Detalle de Transferencias', 'ajustes-pos': 'Detalle de Ajustes Positivos', 'ajustes-neg': 'Detalle de Ajustes Negativos'
+    };
+
+    // Armar la cabecera de la tabla
+    const thead = document.getElementById('rm-thead');
+    thead.innerHTML = `
+        <tr>
+            <th style="width:40px; text-align:center;">#</th>
+            <th style="width:80px;">Fecha</th>
+            <th style="width:100px;">Documento</th>
+            <th style="width:160px;">Tipo Movimiento</th>
+            <th>Usuario / Referencia</th>
+            <th style="text-align:right;">Cantidad</th>
+        </tr>
+    `;
+    
+    document.getElementById('rm-title').textContent = `${titles[tipo]} - ${codigo}`;
+    const meta = GLOBAL_METADATA.get(codigo);
+    document.getElementById('rm-desc').textContent = meta ? meta.descripcion : '';
+    
+    // Armar el cuerpo de la tabla
+    const tbody = document.getElementById('rm-tbody');
+    tbody.innerHTML = details.map((d, i) => {
+        let qtyColor = d.qty < 0 ? 'var(--sys-red)' : 'var(--sys-green)';
+        if(tipo === 'compras' && d.qty < 0) qtyColor = 'var(--sys-orange)'; // Destacar anulaciones de compra
+        
+        return `
+        <tr style="border-bottom: 1px solid var(--border-light); background: var(--surface);">
+            <td style="text-align:center; color: var(--text-muted); font-size: 11px;">${i+1}</td>
+            <td style="color: var(--text-muted); font-size: 11px;">${d.dateStr}</td>
+            <td style="font-size: 11px; color: var(--text-muted); font-family:monospace;">${d.doc}</td>
+            <td style="font-size: 11px; font-weight:700; color:var(--text);">${d.mov}</td>
+            <td style="font-size: 11px;" title="${d.buyer}">${truncateString(d.buyer, 30)}</td>
+            <td style="text-align:right; font-weight:800; font-family:monospace; color: ${qtyColor};">${fmt(d.qty)} un.</td>
+        </tr>`;
+    }).join('');
+    
+    if(details.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--text-muted);">No hay transacciones registradas de este tipo.</td></tr>`; }
+    
+    // Abrir el modal de lista
+    document.getElementById('ranking-modal').classList.remove('hidden');
+}
 
 /* =====================================================================
    7. PLANIFICADOR DE COMPRAS LÓGICA (NATIVA DEL GLOBAL)
