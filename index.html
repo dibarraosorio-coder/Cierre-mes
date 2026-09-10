@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hub Logístico | Dashboard</title>
+<title>Hub Bodega PAV | Dashboard</title>
 <!-- SheetJS para Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Chart.js para Gráficos -->
@@ -21,7 +21,7 @@
   }
 
   /* ==============================================================
-     SISTEMA DE 6 TEMAS EJECUTIVOS (ALTA GERENCIA - DARK MODE)
+     SISTEMA DE TEMAS VISUALES (ACTUALIZADO)
      ============================================================== */
      
   /* 1. CORPORATE BLUE (Sobriedad y Tecnología) */
@@ -34,54 +34,34 @@
     --chart-6: #fbb117; --chart-7: #4ade80; --chart-8: #2dd4bf; --chart-9: #94a3b8; --chart-10:#e2e8f0; 
   }
 
-  /* 2. FOREST GOLD (Elegancia Inmobiliaria) */
-  body[data-theme="forest"] {
-    --bg: #0b1411; --surface: #121e18; --surface2: #1a2c23; --border: #2d4a3b; --border-light: rgba(45, 74, 59, 0.5);
-    --text: #fdfbf7; --text-muted: #a3b3ac; --text-tertiary: #75867f;
-    --accent: #d4b58e; --accent-glow: rgba(212, 181, 142, 0.15);
-    --sys-green: #4ade80; --sys-yellow: #fcd34d; --sys-orange: #fb923c; --sys-red: #ef4444;
-    --chart-1: #d4b58e; --chart-2: #7fa896; --chart-3: #4d7a6b; --chart-4: #e8a365; --chart-5: #d97059; 
-    --chart-6: #c45b6d; --chart-7: #9c6c8f; --chart-8: #b39b82; --chart-9: #e6dac3; --chart-10:#5b6e68; 
-  }
-
-  /* 3. OBSIDIAN (Minimalismo Puro - Alto Contraste) */
-  body[data-theme="obsidian"] {
-    --bg: #09090b; --surface: #18181b; --surface2: #27272a; --border: #3f3f46; --border-light: rgba(63, 63, 70, 0.5);
-    --text: #fafafa; --text-muted: #a1a1aa; --text-tertiary: #71717a;
-    --accent: #f4f4f5; --accent-glow: rgba(255, 255, 255, 0.1);
-    --sys-green: #22c55e; --sys-yellow: #eab308; --sys-orange: #f97316; --sys-red: #ef4444;
-    --chart-1: #ffffff; --chart-2: #d4d4d8; --chart-3: #a1a1aa; --chart-4: #71717a; --chart-5: #52525b; 
-    --chart-6: #3f3f46; --chart-7: #60a5fa; --chart-8: #34d399; --chart-9: #fbbf24; --chart-10:#f87171; 
-  }
-
-  /* 4. TERRACOTTA (Calidez y Presencia) */
-  body[data-theme="terracotta"] {
-    --bg: #1a1412; --surface: #261a18; --surface2: #332421; --border: #4a3631; --border-light: rgba(74, 54, 49, 0.5);
-    --text: #fdf8f6; --text-muted: #bda39d; --text-tertiary: #8f7670;
-    --accent: #f97316; --accent-glow: rgba(249, 115, 22, 0.15);
-    --sys-green: #34d399; --sys-yellow: #fcd34d; --sys-orange: #fb923c; --sys-red: #ef4444;
-    --chart-1: #f97316; --chart-2: #fb923c; --chart-3: #fca5a5; --chart-4: #f43f5e; --chart-5: #9f1239; 
-    --chart-6: #7c2d12; --chart-7: #d97706; --chart-8: #eab308; --chart-9: #fef08a; --chart-10:#8b5cf6; 
-  }
-
-  /* 5. OCEAN TEAL (Profundidad y Claridad) */
-  body[data-theme="ocean"] {
-    --bg: #06161c; --surface: #0d242b; --surface2: #15343e; --border: #204d5c; --border-light: rgba(32, 77, 92, 0.5);
-    --text: #f0fdfa; --text-muted: #5eead4; --text-tertiary: #388e85;
-    --accent: #14b8a6; --accent-glow: rgba(20, 184, 166, 0.15);
-    --sys-green: #10b981; --sys-yellow: #fbbf24; --sys-orange: #f59e0b; --sys-red: #ef4444;
-    --chart-1: #14b8a6; --chart-2: #06b6d4; --chart-3: #0ea5e9; --chart-4: #3b82f6; --chart-5: #6366f1; 
-    --chart-6: #8b5cf6; --chart-7: #a855f7; --chart-8: #d946ef; --chart-9: #ec4899; --chart-10:#f43f5e; 
-  }
-
-  /* 6. AMETHYST (Vanguardia y Exclusividad) */
-  body[data-theme="amethyst"] {
-    --bg: #130d1a; --surface: #1e1629; --surface2: #2a1f38; --border: #3f3152; --border-light: rgba(63, 49, 82, 0.5);
-    --text: #faf5ff; --text-muted: #c084fc; --text-tertiary: #8b68b8;
-    --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.15);
+  /* 2. ESCALA DE GRISES */
+  body[data-theme="grayscale"] {
+    --bg: #0a0a0a; --surface: #171717; --surface2: #262626; --border: #404040; --border-light: rgba(64, 64, 64, 0.5);
+    --text: #f5f5f5; --text-muted: #a3a3a3; --text-tertiary: #737373;
+    --accent: #ffffff; --accent-glow: rgba(255, 255, 255, 0.15);
     --sys-green: #4ade80; --sys-yellow: #facc15; --sys-orange: #fb923c; --sys-red: #ef4444;
-    --chart-1: #a855f7; --chart-2: #c084fc; --chart-3: #e879f9; --chart-4: #f472b6; --chart-5: #fb7185; 
-    --chart-6: #38bdf8; --chart-7: #818cf8; --chart-8: #34d399; --chart-9: #facc15; --chart-10:#94a3b8; 
+    --chart-1: #ffffff; --chart-2: #d4d4d8; --chart-3: #a1a1aa; --chart-4: #71717a; --chart-5: #52525b; 
+    --chart-6: #3f3f46; --chart-7: #27272a; --chart-8: #e4e4e7; --chart-9: #52525b; --chart-10:#a1a1aa; 
+  }
+
+  /* 3. AZUL, ROJO Y BLANCO (Tonalidades suaves / Claro) */
+  body[data-theme="tricolor"] {
+    --bg: #f4f6f9; --surface: #ffffff; --surface2: #e9ecef; --border: #dee2e6; --border-light: rgba(222, 226, 230, 0.5);
+    --text: #212529; --text-muted: #6c757d; --text-tertiary: #adb5bd;
+    --accent: #3b82f6; --accent-glow: rgba(59, 130, 246, 0.2);
+    --sys-green: #10b981; --sys-yellow: #f59e0b; --sys-orange: #f97316; --sys-red: #ef4444;
+    --chart-1: #3b82f6; --chart-2: #ef4444; --chart-3: #60a5fa; --chart-4: #f87171; --chart-5: #93c5fd; 
+    --chart-6: #fca5a5; --chart-7: #bfdbfe; --chart-8: #fecaca; --chart-9: #2563eb; --chart-10:#dc2626; 
+  }
+
+  /* 4. ROSADO PASTEL (Claro) */
+  body[data-theme="pastel-pink"] {
+    --bg: #fff0f3; --surface: #ffe5ec; --surface2: #ffc2d1; --border: #ffb3c6; --border-light: rgba(255, 179, 198, 0.5);
+    --text: #590d22; --text-muted: #800f2f; --text-tertiary: #a4133c;
+    --accent: #ff4d6d; --accent-glow: rgba(255, 77, 109, 0.2);
+    --sys-green: #10b981; --sys-yellow: #f59e0b; --sys-orange: #f97316; --sys-red: #ef4444;
+    --chart-1: #ff4d6d; --chart-2: #ff758f; --chart-3: #ff8fa3; --chart-4: #ffb3c6; --chart-5: #ffc2d1; 
+    --chart-6: #c9184a; --chart-7: #a4133c; --chart-8: #800f2f; --chart-9: #590d22; --chart-10:#ff4d6d; 
   }
   
   /* ==============================================================
@@ -173,10 +153,10 @@
   .dropdown-search input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; height: 28px; color: var(--text); font-size: 11px; outline: none; }
   .dropdown-search input:focus { border-color: var(--accent); }
 
-  /* Custom Toggle Switch Slim */
-  .toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); border: 1px solid var(--border); height: 32px; transition: 0.2s;}
+  /* Custom Toggle Switch Slim - ACTUALIZADO */
+  .toggle-wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); border: 1px solid var(--border); height: 32px; transition: 0.2s; white-space: nowrap;}
   .toggle-wrap:hover { border-color: var(--accent); }
-  .toggle-labels { display: flex; flex-direction: column; justify-content: center;}
+  .toggle-labels { display: flex; flex-direction: column; justify-content: center; flex-shrink: 0;}
   input[type="checkbox"].ios-switch { appearance: none; width: 30px; height: 16px; background: var(--surface2); border-radius: 20px; position: relative; cursor: pointer; outline: none; transition: background 0.3s; flex-shrink: 0; margin: 0; border: 1px solid var(--border);}
   input[type="checkbox"].ios-switch::after { content: ''; position: absolute; top: 1px; left: 2px; width: 12px; height: 12px; background: #fff; border-radius: 50%; transition: transform 0.3s; }
   input[type="checkbox"].ios-switch:checked { background: var(--sys-green); border-color: var(--sys-green);}
@@ -348,7 +328,7 @@
 <!-- CABECERA PRINCIPAL -->
 <div class="header">
   <div class="header-left">
-    <h1>Hub Logístico <span class="accent-dot">·</span> <span id="dynamic-title" style="color: var(--text-muted); font-weight: 700;">Dashboard Gráfico</span></h1>
+    <h1>Hub Bodega PAV <span class="accent-dot">·</span> <span id="dynamic-title" style="color: var(--text-muted); font-weight: 700;">Dashboard Gráfico</span></h1>
     <div class="header-sub" id="header-period">Esperando datos...</div> 
   </div>
   
@@ -356,11 +336,9 @@
       <div class="action-row">
           <select id="theme-selector" class="theme-select" onchange="changeTheme(this.value)" title="Cambiar Tema Visual">
               <option value="corporate" selected>Corporate Blue</option>
-              <option value="forest">Forest Gold</option>
-              <option value="obsidian">Obsidian</option>
-              <option value="terracotta">Terracotta</option>
-              <option value="ocean">Ocean Teal</option>
-              <option value="amethyst">Amethyst</option>
+              <option value="grayscale">Escala de Grises</option>
+              <option value="tricolor">Azul, Rojo y Blanco</option>
+              <option value="pastel-pink">Rosado Pastel</option>
           </select>
           <div class="divider-v"></div>
           <div style="display:flex; gap:2px;">
@@ -428,7 +406,7 @@
               </details>
               
               <div style="display:flex; align-items:center; gap:16px; margin-left: auto;">
-                  <div class="toggle-wrap" style="margin: 0; height: 32px;">
+                  <div class="toggle-wrap" style="margin: 0; height: 32px;" title="Oculta los productos que tienen 0 unidades físicas en la bodega. Así te enfocas solo en lo que tienes o está quebrado por sistema.">
                     <div class="toggle-labels"><span style="font-size:11px; font-weight:700;">Ocultar Stock 0</span></div>
                     <input type="checkbox" id="flt-stock0" class="ios-switch" checked onchange="applyGlobalFilters()">
                   </div>
@@ -881,7 +859,7 @@ function setEmpresa(empresa, force = false) {
    document.getElementById('btn-inmob').classList.toggle('active', empresa === 'INMOB');
    
    if(empresa === 'ADMIN') document.getElementById('theme-selector').value = 'corporate';
-   if(empresa === 'INMOB') document.getElementById('theme-selector').value = 'forest';
+   if(empresa === 'INMOB') document.getElementById('theme-selector').value = 'grayscale';
    changeTheme(document.getElementById('theme-selector').value);
    
    RAW_EXCEL_ROWS = empresa === 'ADMIN' ? RAW_EXCEL_ADMIN : RAW_EXCEL_INMOB;
@@ -1793,7 +1771,7 @@ function showProductModal(codigo) {
     document.getElementById('m-ajustes-neg').textContent = fmt(ajNeg); 
     document.getElementById('m-transf').textContent = fmt(transf);
 
-    // NUEVO: Asignar eventos onClick a las cajas del modal
+    // Asignar eventos onClick a las cajas del modal
     document.querySelector('.m-stock').onclick = () => openMovementDetails(codigo, 'stock');
     document.querySelector('.m-comp').onclick = () => openMovementDetails(codigo, 'compras');
     document.querySelector('.m-tra').onclick = () => openMovementDetails(codigo, 'transferencias');
@@ -2136,7 +2114,7 @@ document.getElementById('pl-export-btn').addEventListener('click', () => {
     const mesHasta = selectEnd.options[selectEnd.selectedIndex]?.text || "";
 
     let aoa = [
-        ["REPORTE DE PLANIFICACIÓN DE COMPRAS - HUB LOGÍSTICO"],
+        ["REPORTE DE PLANIFICACIÓN DE COMPRAS - HUB BODEGA PAV"],
         ["Centro de Costo:", CURRENT_EMPRESA === 'ADMIN' ? 'Administradora Los Parques' : 'Inmobiliaria Los Parques'],
         ["Período Histórico Evaluado:", `${mesDesde} al ${mesHasta}`],
         ["Configuración de Proyección:", `${suggestMonths} Meses sugeridos + ${safetyMonths} Meses de Seguridad`],
