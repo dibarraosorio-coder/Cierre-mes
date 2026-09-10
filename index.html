@@ -729,6 +729,54 @@
 
 <script>
 /* =====================================================================
+   0. BASE DE DATOS LOCAL (IndexedDB PARA MEMORIA PERSISTENTE)
+===================================================================== */
+const DB_NAME = 'HubBodegaDB';
+const STORE_NAME = 'ExcelFiles';
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = e => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+        request.onsuccess = e => resolve(e.target.result);
+        request.onerror = e => reject(e.target.error);
+    });
+}
+
+async function saveToDB(key, data) {
+    try {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(data, key);
+    } catch(e) { console.error("Error guardando en memoria:", e); }
+}
+
+async function getFromDB(key) {
+    try {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).get(key);
+        return new Promise(resolve => {
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+        });
+    } catch(e) { return null; }
+}
+
+async function clearDB() {
+    try {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).clear();
+    } catch(e) {}
+}
+
+/* =====================================================================
    1. VARIABLES GLOBALES Y CONSTANTES (DUAL STATE)
 ===================================================================== */
 let RAW_EXCEL_ADMIN = [];
@@ -858,6 +906,7 @@ function setEmpresa(empresa, force = false) {
    document.getElementById('btn-admin').classList.toggle('active', empresa === 'ADMIN');
    document.getElementById('btn-inmob').classList.toggle('active', empresa === 'INMOB');
    
+   // Al cambiar de empresa, ajustamos el tema visual según corresponden
    if(empresa === 'ADMIN') document.getElementById('theme-selector').value = 'corporate';
    if(empresa === 'INMOB') document.getElementById('theme-selector').value = 'grayscale';
    changeTheme(document.getElementById('theme-selector').value);
@@ -884,12 +933,14 @@ function setEmpresa(empresa, force = false) {
 }
 
 function clearAllData() {
-    if(confirm("¿Estás seguro de que deseas limpiar todos los datos, archivos y configuraciones?")) {
+    if(confirm("¿Estás seguro de que deseas limpiar todos los datos, archivos y configuraciones de la memoria?")) {
         RAW_EXCEL_ADMIN = []; RAW_EXCEL_INMOB = []; RAW_EXCEL_ROWS = []; PROCESSED_DATA = [];
         PLANNER_DATA_ADMIN = { months: [], records: [], requestedQtys: {} };
         PLANNER_DATA_INMOB = { months: [], records: [], requestedQtys: {} };
         PLANNER_DATA = CURRENT_EMPRESA === 'ADMIN' ? PLANNER_DATA_ADMIN : PLANNER_DATA_INMOB;
+        
         localStorage.removeItem('logistic_planner_qtys_ADMIN'); localStorage.removeItem('logistic_planner_qtys_INMOB');
+        clearDB(); // BORRAR MEMORIA PESADA
         
         document.getElementById('upload-status').innerHTML = '<span style="color:var(--text-muted)">Datos borrados. Esperando archivo...</span>';
         document.getElementById('main-content').classList.add('hidden');
@@ -2189,8 +2240,8 @@ function handleFile(file, type) {
                 });
 
                 if(parsedRows && parsedRows.length > 0) {
-                    if (type === 'ADMIN') { RAW_EXCEL_ADMIN = parsedRows; }
-                    else { RAW_EXCEL_INMOB = parsedRows; }
+                    if (type === 'ADMIN') { RAW_EXCEL_ADMIN = parsedRows; saveToDB('ADMIN', parsedRows); }
+                    else { RAW_EXCEL_INMOB = parsedRows; saveToDB('INMOB', parsedRows); }
                     
                     setEmpresa(type, true); 
                     document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ ${type} Cargado (${fmt(parsedRows.length)} reg.)</span>`;
@@ -2206,9 +2257,27 @@ function handleFile(file, type) {
 document.getElementById('excel-upload-admin').addEventListener('change', e => handleFile(e.target.files[0], 'ADMIN'));
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
 
-// INIT
+// INIT Y RECUPERACIÓN DE MEMORIA
 document.body.setAttribute('data-theme', 'corporate');
 updateChartColors();
+
+window.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-yellow)">⏳ Restaurando memoria de bodega...</span>`;
+    const adminData = await getFromDB('ADMIN');
+    const inmobData = await getFromDB('INMOB');
+    
+    let hasData = false;
+    if (adminData && adminData.length > 0) { RAW_EXCEL_ADMIN = adminData; hasData = true; }
+    if (inmobData && inmobData.length > 0) { RAW_EXCEL_INMOB = inmobData; hasData = true; }
+
+    if (hasData) {
+        const defaultEmpresa = (RAW_EXCEL_ADMIN.length > 0) ? 'ADMIN' : 'INMOB';
+        setEmpresa(defaultEmpresa, true);
+        document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ Datos recuperados de la memoria local.</span>`;
+    } else {
+        document.getElementById('upload-status').innerHTML = `<span style="color:var(--text-muted)">Esperando archivos...</span>`;
+    }
+});
 </script>
 </body>
 </html>
