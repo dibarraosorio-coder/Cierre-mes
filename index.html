@@ -277,7 +277,7 @@
   
   #tab-planificador .pl-container { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 8px 24px 24px;}
   .pl-table-wrap { flex: 1; overflow: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
-  .pl-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 1300px; }
+  .pl-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; min-width: 1400px; }
   
   /* TH Sticky Planificador anclados a su caja */
   #tab-planificador th { background: var(--surface2); color: var(--text-muted); padding: 10px 12px; font-weight: 800; font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 10; box-shadow: inset 0 -1px 0 var(--border);}
@@ -353,6 +353,11 @@
               <label for="excel-upload-inmob" class="btn-upload" title="Cargar archivo Inmobiliaria">
                   📥 Cargar INM <input type="file" id="excel-upload-inmob" accept=".xlsx, .xls" style="display:none">
               </label>
+              <!-- NUEVO: BOTÓN CARGAR OC MANUALMENTE -->
+              <label for="excel-upload-proveedores" class="btn-upload" title="Cargar archivo de Seguimiento Proveedores" style="background: var(--sys-orange); color: #fff; border-color: var(--sys-orange);">
+                  🚚 Cargar OC <input type="file" id="excel-upload-proveedores" accept=".xlsx, .xls" style="display:none">
+              </label>
+              
               <button class="btn-clear" onclick="clearAllData()" title="Limpiar todos los datos">
                   🗑️ Limpiar
               </button>
@@ -396,7 +401,7 @@
           <div class="filters-footer" style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light);">
               <details class="secondary-filters" style="flex: 1; margin-right: 20px;">
                   <summary>+ Mostrar Filtros Adicionales</summary>
-                  <div class="secondary-filters-content" style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--border-light);">
+                  <div class="secondary-filters-content" style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--border-light); ">
                     <div class="filter-group" style="flex: 1; min-width: 150px;"><label>Nº Documento</label><button class="dropdown-btn" id="btn-flt-numdoc" onclick="toggleDropdown('dropdown-numdoc')">Todas</button><div class="dropdown-content" id="dropdown-numdoc"><div class="dropdown-search"><input type="text" placeholder="Buscar..." onkeyup="filterDropdownList('dropdown-numdoc', this.value)"></div><div class="dropdown-list" id="list-flt-numdoc"></div></div></div>
                     <div class="filter-group" style="flex: 1; min-width: 150px;"><label>Tipo Documento</label><button class="dropdown-btn" id="btn-flt-tipodoc" onclick="toggleDropdown('dropdown-tipodoc')">Todas</button><div class="dropdown-content" id="dropdown-tipodoc"><div class="dropdown-search"><input type="text" placeholder="Buscar..." onkeyup="filterDropdownList('dropdown-tipodoc', this.value)"></div><div class="dropdown-list" id="list-flt-tipodoc"></div></div></div>
                     <div class="filter-group" style="flex: 1; min-width: 150px;"><label>Nat. Transacción</label><button class="dropdown-btn" id="btn-flt-nat" onclick="toggleDropdown('dropdown-nat')">Todas</button><div class="dropdown-content" id="dropdown-nat"><div class="dropdown-search"><input type="text" placeholder="Buscar..." onkeyup="filterDropdownList('dropdown-nat', this.value)"></div><div class="dropdown-list" id="list-flt-nat"></div></div></div>
@@ -671,6 +676,7 @@
                       <th style="width:90px; text-align:center; color:var(--text-muted);">Frec. Recepción</th>
                       <th style="width:110px; text-align:right; color:var(--sys-yellow);">Sugerido</th>
                       <th style="width:100px; text-align:right;">Stock</th>
+                      <!-- AQUI SE INYECTA LA NUEVA COLUMNA DINÁMICAMENTE -->
                       <th style="width:140px; text-align:center; background:var(--surface2);">Cant. a Solicitar</th>
                   </tr>
               </thead>
@@ -793,6 +799,9 @@ let currentLocalFilter = 'all'; let currentSearch = ''; let sortCol = 'codigo'; 
 
 // Estado Modal Sorting
 let modalData = []; let modalSortCol = 'col4'; let modalSortAsc = false; let currentModalType = '';
+
+// NUEVO: Memoria para el archivo de seguimiento de proveedores (OCs en tránsito)
+let PENDING_ORDERS = {}; 
 
 // Estado dual para el Planificador de Compras
 let savedPlannerQtysAdmin = {}; let savedPlannerQtysInmob = {};
@@ -938,6 +947,7 @@ function clearAllData() {
         PLANNER_DATA_ADMIN = { months: [], records: [], requestedQtys: {} };
         PLANNER_DATA_INMOB = { months: [], records: [], requestedQtys: {} };
         PLANNER_DATA = CURRENT_EMPRESA === 'ADMIN' ? PLANNER_DATA_ADMIN : PLANNER_DATA_INMOB;
+        PENDING_ORDERS = {}; // Limpiamos las OC en tránsito
         
         localStorage.removeItem('logistic_planner_qtys_ADMIN'); localStorage.removeItem('logistic_planner_qtys_INMOB');
         clearDB(); // BORRAR MEMORIA PESADA
@@ -946,6 +956,7 @@ function clearAllData() {
         document.getElementById('main-content').classList.add('hidden');
         document.getElementById('welcome-message').classList.remove('hidden');
         document.getElementById('excel-upload-admin').value = ''; document.getElementById('excel-upload-inmob').value = '';
+        document.getElementById('excel-upload-proveedores').value = '';
     }
 }
 
@@ -2056,8 +2067,13 @@ function getPlannerEvaluatedData() {
         let sum = 0;
         for(let m in p.monthlyConsumptions) { sum += p.monthlyConsumptions[m]; }
         
+        // NUEVO: Asignar cantidad en tránsito si existe
+        let enTransito = PENDING_ORDERS[p.code] || 0;
+        p.enTransito = enTransito;
+
         p.avg = Math.ceil(sum / numMonths);
-        p.sugerido = Math.max(0, Math.ceil((p.avg * (suggestMonths + safetyMonths)) - p.stock)); 
+        let sugBase = Math.max(0, Math.ceil((p.avg * (suggestMonths + safetyMonths)) - p.stock)); 
+        p.sugerido = Math.max(0, sugBase - enTransito); // Restamos el tránsito
         
         // Frecuencia de Recepción Matemática
         p.receiptDates.sort((a, b) => a - b);
@@ -2097,6 +2113,8 @@ function processAndRenderPlanner() {
             <th style="width:90px; text-align:center; color:var(--text-muted);">Frec. Recepción<br><span style="font-size:9px;color:var(--text-tertiary);">(Días prom.)</span></th>
             <th style="width:110px; text-align:right; color:var(--sys-yellow);">Sugerido<br><span style="font-size:9px;color:var(--text-tertiary);">(${suggestMonths}M + ${safetyMonths}M Seg.)</span></th>
             <th style="width:100px; text-align:right;">Stock</th>
+            <!-- NUEVA COLUMNA EN TRÁNSITO -->
+            <th style="width:90px; text-align:right; color:var(--sys-orange);">En Tránsito<br><span style="font-size:9px;color:var(--text-tertiary);">(OC Pendiente)</span></th>
             <th style="width:140px; text-align:center; background:var(--surface2);">Cant. a Solicitar</th>
         </tr>`;
     }
@@ -2118,6 +2136,7 @@ function processAndRenderPlanner() {
             <td style="text-align:center; font-family:monospace; font-size:11px; color:var(--text-muted);">${avgReceiptStr}</td>
             <td class="pl-sug">${p.sugerido.toLocaleString('es-ES')}</td>
             <td style="text-align:right;"><span style="${stockStyle}">${p.stock.toLocaleString('es-ES')}</span></td>
+            <td style="text-align:right; font-weight:800; color:var(--sys-orange); font-family:monospace;">${p.enTransito > 0 ? '+'+p.enTransito : '-'}</td>
             <td style="text-align:center; background:rgba(255,255,255,0.02); border-left:0.5px solid var(--border-light);">
                 <input type="number" min="0" placeholder="0" class="pl-qty-input" data-qkey="${p.qKey}" value="${savedQty}">
             </td>
@@ -2174,7 +2193,7 @@ document.getElementById('pl-export-btn').addEventListener('click', () => {
 
     let headers = ["Código", "Descripción"];
     PLANNER_DATA.months.forEach(m => headers.push(m.label));
-    headers.push(`Media Mensual (${numMonths}M)`, "Frec. Recepción (Días)", "Sugerido Base", "Stock Actual", "CANT. TOTAL A SOLICITAR");
+    headers.push(`Media Mensual (${numMonths}M)`, "Frec. Recepción (Días)", "Sugerido Base", "Stock Actual", "En Tránsito (OC)", "CANT. TOTAL A SOLICITAR");
     
     for(let i=1; i<=suggestMonths; i++) { headers.push(`Llegada Mes ${i}`); }
     aoa.push(headers);
@@ -2190,7 +2209,7 @@ document.getElementById('pl-export-btn').addEventListener('click', () => {
                 row.push(p.monthlyConsumptions[m.val] || 0);
             });
             
-            row.push(p.avg, p.avgReceiptDays !== null ? Math.round(p.avgReceiptDays) : 'N/A', p.sugerido, p.stock, qty);
+            row.push(p.avg, p.avgReceiptDays !== null ? Math.round(p.avgReceiptDays) : 'N/A', p.sugerido, p.stock, p.enTransito, qty);
             
             let basePerMonth = Math.floor(qty / suggestMonths);
             let remainder = qty % suggestMonths;
@@ -2254,8 +2273,86 @@ function handleFile(file, type) {
     reader.readAsArrayBuffer(file);
 }
 
+// LÓGICA DE EXTRACCIÓN DE OC EN TRÁNSITO
+function handleProveedoresFile(file) {
+    if (!file) return;
+    document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-yellow)">⏳ Procesando OCs en tránsito...</span>`;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        setTimeout(() => {
+            try {
+                const data = new Uint8Array(ev.target.result); 
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                PENDING_ORDERS = {}; // Reiniciar memoria de OCs
+                let totalPending = 0;
+                
+                // Iterar por todas las pestañas de proveedores
+                workbook.SheetNames.forEach(sheetName => {
+                    // Ignorar hojas que sean de carga o resumen
+                    if (sheetName.toUpperCase().includes('CARGAR') || sheetName.toUpperCase().includes('RESUMEN')) return;
+                    
+                    // Extraer los datos como matriz cruda
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header: 1, defval: null});
+                    
+                    let headerIndex = -1; let colCodigo = -1; let colPendiente = -1; let colEstado = -1;
+                    
+                    // Buscar en las primeras 10 filas dónde están las cabeceras importantes
+                    for(let i=0; i<Math.min(10, rows.length); i++) {
+                        const row = rows[i];
+                        if(!row) continue;
+                        
+                        for(let j=0; j<row.length; j++) {
+                            const val = String(row[j] || '').toUpperCase().trim();
+                            if(val === 'CÓDIGO' || val === 'CODIGO') colCodigo = j;
+                            if(val.includes('PENDIENTE')) colPendiente = j;
+                            if(val === 'ESTADO') colEstado = j;
+                        }
+                        
+                        if(colCodigo !== -1 && colPendiente !== -1) {
+                            headerIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    // Si encontró las cabeceras, extraer la información
+                    if (headerIndex !== -1) {
+                        for(let i = headerIndex + 1; i < rows.length; i++) {
+                            const row = rows[i];
+                            if(!row || !row[colCodigo]) continue; // Fila vacía o sin código
+                            
+                            const code = String(row[colCodigo]).trim();
+                            const estado = colEstado !== -1 ? String(row[colEstado] || '').toLowerCase().trim() : 'pendiente';
+                            const cantPendiente = parseFloat(row[colPendiente]) || 0;
+                            
+                            // Solo sumar si hay cantidad pendiente y el estado no es ni entregado ni anulado
+                            if (cantPendiente > 0 && !estado.includes('entregado') && !estado.includes('anulado') && !estado.includes('recibido')) {
+                                if (!PENDING_ORDERS[code]) PENDING_ORDERS[code] = 0;
+                                PENDING_ORDERS[code] += cantPendiente;
+                                totalPending++;
+                            }
+                        }
+                    }
+                });
+                
+                saveToDB('PROVEEDORES', PENDING_ORDERS); // Guardar en memoria
+                
+                document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Cargadas (${totalPending} ítems en tránsito)</span>`;
+                
+                // Actualizar planificador si está activo para que refleje los cambios inmediatamente
+                if(PROCESSED_DATA.length > 0) processAndRenderPlanner();
+                
+            } catch(err) { 
+                document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-red)">❌ Error OC: ${err.message}</span>`; 
+            }
+        }, 100);
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 document.getElementById('excel-upload-admin').addEventListener('change', e => handleFile(e.target.files[0], 'ADMIN'));
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
+document.getElementById('excel-upload-proveedores').addEventListener('change', e => handleProveedoresFile(e.target.files[0]));
 
 // INIT Y RECUPERACIÓN DE MEMORIA
 document.body.setAttribute('data-theme', 'corporate');
@@ -2263,9 +2360,15 @@ updateChartColors();
 
 window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-yellow)">⏳ Restaurando memoria de bodega...</span>`;
+    
+    // Recuperar datos de los Excel base
     const adminData = await getFromDB('ADMIN');
     const inmobData = await getFromDB('INMOB');
     
+    // Recuperar OCs en tránsito
+    const provData = await getFromDB('PROVEEDORES');
+    if (provData) PENDING_ORDERS = provData;
+
     let hasData = false;
     if (adminData && adminData.length > 0) { RAW_EXCEL_ADMIN = adminData; hasData = true; }
     if (inmobData && inmobData.length > 0) { RAW_EXCEL_INMOB = inmobData; hasData = true; }
