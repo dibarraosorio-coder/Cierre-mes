@@ -648,9 +648,26 @@
               <label class="pl-label">Disponibilidad Stock</label>
               <select id="pl-stock-filter" class="pl-select"><option value="TODOS">Ver todo el stock</option><option value="SIN_STOCK">Sin Stock (Stock = 0)</option><option value="CON_STOCK">Con Stock (> 0)</option></select>
           </div>
+          
+          <!-- NUEVOS FILTROS OC -->
+          <div class="pl-filter-col">
+              <label class="pl-label">Proveedor</label>
+              <select id="pl-proveedor-filter" class="pl-select">
+                  <option value="TODOS">Todos los proveedores</option>
+              </select>
+          </div>
+          <div class="pl-filter-col">
+              <label class="pl-label">Filtro OC</label>
+              <select id="pl-oc-filter" class="pl-select">
+                  <option value="TODOS">Todas las OCs</option>
+                  <option value="CON_OC">Con OC Pendiente</option>
+                  <option value="SIN_OC">Sin OC Pendiente</option>
+              </select>
+          </div>
+
           <div class="pl-filter-col">
               <label class="pl-label">Estado de Compra</label>
-              <select id="pl-status-filter" class="pl-select"><option value="TODOS">Ver Todo el Listado</option><option value="CON_SUGERIDO">Solo con Sugerido Compra (> 0)</option><option value="STOCK_CRITICO">Stock Crítico</option></select>
+              <select id="pl-status-filter" class="pl-select"><option value="TODOS">Ver Todo el Listado</option><option value="CON_SUGERIDO">Solo Sugerido (> 0)</option><option value="STOCK_CRITICO">Stock Crítico</option></select>
           </div>
           
           <div class="pl-filter-col" style="grid-column: span 2;">
@@ -1598,43 +1615,7 @@ function openTimelineModal(key, displayLabel) {
     document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
-// NUEVO: Función para mostrar el detalle de las OCs pendientes
-function openInTransitDetails(codigo) {
-    const orders = PENDING_ORDERS[codigo] || [];
-    if(orders.length === 0) return;
-
-    document.getElementById('rm-title').textContent = `En Tránsito: ${codigo}`;
-    const meta = GLOBAL_METADATA.get(codigo);
-    document.getElementById('rm-desc').textContent = meta ? meta.descripcion : 'Detalle de Órdenes de Compra Pendientes';
-
-    const thead = document.getElementById('rm-thead');
-    thead.innerHTML = `
-        <tr>
-            <th style="width:150px;">Proveedor (Empresa)</th>
-            <th style="width:80px;">N° OC</th>
-            <th style="width:90px;">Fecha OC</th>
-            <th style="text-align:right; width:90px;">Solicitado</th>
-            <th style="text-align:right; width:90px;">Recibido</th>
-            <th style="text-align:right; width:100px; color:var(--sys-orange);">Pendiente</th>
-        </tr>
-    `;
-
-    const tbody = document.getElementById('rm-tbody');
-    tbody.innerHTML = orders.map((o) => `
-        <tr style="border-bottom: 1px solid var(--border-light); background: var(--surface);">
-            <td style="font-weight:700; color:var(--text); font-size:11px;">${o.empresa}</td>
-            <td style="color:var(--text-muted); font-size:11px; font-family:monospace;">${o.oc}</td>
-            <td style="color:var(--text-muted); font-size:11px;">${o.fecha}</td>
-            <td style="text-align:right; font-family:monospace; font-size:11px;">${fmt(o.solicitado)}</td>
-            <td style="text-align:right; font-family:monospace; font-size:11px; color:var(--sys-green);">${fmt(o.recibido)}</td>
-            <td style="text-align:right; font-weight:800; font-family:monospace; color:var(--sys-orange);">${fmt(o.pendiente)}</td>
-        </tr>
-    `).join('');
-
-    document.getElementById('ranking-modal').classList.remove('hidden');
-}
-
-// LOGICA DE ORDENAMIENTO EN MODAL
+// LÓGICA DE ORDENAMIENTO EN MODAL
 function renderModalTable() {
     const tbody = document.getElementById('rm-tbody');
     
@@ -1973,6 +1954,37 @@ function generateMonthRange(start, end) {
     return months;
 }
 
+// NUEVO: Función para mantener actualizado el filtro de proveedores
+function updateProveedorDropdown() {
+    const proveedores = new Set();
+    
+    // Extraer de la data principal
+    RAW_EXCEL_ROWS.forEach(row => {
+        const tipoMov = String(getCol(row, COL_MOV) || '').toUpperCase();
+        const docTipo = String(getCol(row, COL_DOC_TIPO) || '').toUpperCase();
+        if (tipoMov.includes('COMPRA') || docTipo.includes('RECEPCIÓN') || docTipo.includes('RECEPCION')) {
+            const comp = String(getCol(row, COL_COMP) || '').trim().toUpperCase();
+            if (comp && comp !== 'SIN ESPECIFICAR') proveedores.add(comp);
+        }
+    });
+
+    // Extraer de las OC en tránsito (si hay)
+    Object.values(PENDING_ORDERS).forEach(orders => {
+        orders.forEach(o => {
+            if (o.empresa && o.empresa.trim() !== '') proveedores.add(o.empresa.toUpperCase());
+        });
+    });
+
+    const provSelect = document.getElementById('pl-proveedor-filter');
+    const currentVal = provSelect.value;
+    
+    provSelect.innerHTML = '<option value="TODOS">Todos los proveedores</option>' + 
+                           Array.from(proveedores).sort().map(p => `<option value="${p}">${p}</option>`).join('');
+    
+    // Restaurar valor previo si sigue existiendo
+    if (proveedores.has(currentVal)) provSelect.value = currentVal;
+}
+
 function initPlannerDropdowns() {
     const parques = new Set(); const almacenes = new Set(); const monthsSet = new Set(); const familias = new Set();
     RAW_EXCEL_ROWS.forEach(row => {
@@ -2005,6 +2017,9 @@ function initPlannerDropdowns() {
         dEnd.value = sortedMonths[sortedMonths.length - 1];
         dStart.value = sortedMonths[Math.max(0, sortedMonths.length - 6)];
     }
+
+    // Llenar proveedores
+    updateProveedorDropdown();
 }
 
 document.getElementById('pl-parque-select').addEventListener('change', (e) => {
@@ -2042,24 +2057,28 @@ function extractPlannerDataFromGlobal() {
         const qty = parseFloat(getCol(row, COL_CANT)) || 0;
         const naturaleza = String(getCol(row, COL_NAT) || '').toUpperCase();
         const tipoMov = String(getCol(row, COL_MOV) || '').toUpperCase();
-        const tipoDoc = String(getCol(row, COL_DOC_TIPO) || '').trim();
+        const tipoDoc = String(getCol(row, COL_DOC_TIPO) || '').toUpperCase().trim();
         const dateRaw = parseExcelDate(getCol(row, COL_FECHA));
 
         let desc = GLOBAL_METADATA.has(code) ? GLOBAL_METADATA.get(code).descripcion : `Art. ${code}`;
         const key = code; 
 
         if (!map[key]) {
-            map[key] = { code: code, description: desc, stock: 0, monthlyConsumptions: {}, qKey: `PL__${code}`, receiptDates: [] };
+            map[key] = { code: code, description: desc, stock: 0, monthlyConsumptions: {}, qKey: `PL__${code}`, receiptDates: [], proveedoresHist: new Set() };
             targetMonths.forEach(m => map[key].monthlyConsumptions[m.val] = 0);
         }
         
         map[key].stock += qty;
 
+        // Capturar proveedores históricos para este SKU
+        if (tipoMov.includes('COMPRA') || tipoDoc.includes('RECEPCIÓN') || tipoDoc.includes('RECEPCION')) {
+            const comp = String(getCol(row, COL_COMP) || '').trim().toUpperCase();
+            if (comp && comp !== 'SIN ESPECIFICAR') map[key].proveedoresHist.add(comp);
+        }
+
         // Capturar Fecha de Recepción
-        if (tipoDoc.toUpperCase() === 'RECEPCIÓN DE COMPRA' || tipoDoc.toUpperCase() === 'RECEPCION DE COMPRA') {
-            if (dateRaw) {
-                map[key].receiptDates.push(dateRaw);
-            }
+        if (tipoDoc.includes('RECEPCIÓN DE COMPRA') || tipoDoc.includes('RECEPCION DE COMPRA')) {
+            if (dateRaw) map[key].receiptDates.push(dateRaw);
         }
 
         // Histórico Mensual Consumos
@@ -2082,6 +2101,10 @@ function getPlannerEvaluatedData() {
     const suggestMonths = parseInt(document.getElementById('pl-suggest-months').value) || 3;
     const safetyMonths = parseInt(document.getElementById('pl-safety-stock').value) || 0;
     
+    // Filtros Nuevos
+    const selectedProveedor = document.getElementById('pl-proveedor-filter').value;
+    const selectedOC = document.getElementById('pl-oc-filter').value;
+
     // Multi-Select para Familias
     const famCheckboxes = document.querySelectorAll('#list-pl-familia input[type="checkbox"]:checked');
     const selectedFams = Array.from(famCheckboxes).map(cb => cb.value);
@@ -2098,15 +2121,34 @@ function getPlannerEvaluatedData() {
             if(!matchesFam) return;
         }
 
-        let sum = 0;
-        for(let m in p.monthlyConsumptions) { sum += p.monthlyConsumptions[m]; }
-        
-        // Asignar cantidad en tránsito sumada
+        // Asignar cantidad en tránsito
         let enTransito = 0;
+        let pProveedoresOC = new Set();
         if (PENDING_ORDERS[p.code]) {
-            enTransito = PENDING_ORDERS[p.code].reduce((acc, order) => acc + order.pendiente, 0);
+            PENDING_ORDERS[p.code].forEach(order => {
+                enTransito += order.pendiente;
+                if(order.empresa) pProveedoresOC.add(order.empresa.toUpperCase());
+            });
         }
         p.enTransito = enTransito;
+
+        // FILTRO: OCs Pendientes
+        if (selectedOC === 'CON_OC' && p.enTransito === 0) return;
+        if (selectedOC === 'SIN_OC' && p.enTransito > 0) return;
+
+        // FILTRO: Proveedor
+        if (selectedProveedor !== 'TODOS') {
+            let hasProveedor = false;
+            // Verificar en tránsito
+            if (pProveedoresOC.has(selectedProveedor)) hasProveedor = true;
+            // Verificar en histórico
+            if (!hasProveedor && p.proveedoresHist && p.proveedoresHist.has(selectedProveedor)) hasProveedor = true;
+            
+            if (!hasProveedor) return; // Omitir si no le compramos a este proveedor
+        }
+
+        let sum = 0;
+        for(let m in p.monthlyConsumptions) { sum += p.monthlyConsumptions[m]; }
 
         p.avg = Math.ceil(sum / numMonths);
         let sugBase = Math.max(0, Math.ceil((p.avg * (suggestMonths + safetyMonths)) - p.stock)); 
@@ -2164,7 +2206,7 @@ function processAndRenderPlanner() {
         const savedQty = PLANNER_DATA.requestedQtys[p.qKey] !== undefined ? PLANNER_DATA.requestedQtys[p.qKey] : '';
         const avgReceiptStr = p.avgReceiptDays !== null ? `${Math.round(p.avgReceiptDays)} d` : 'N/A';
 
-        // NUEVO: Enlace clickeable para OCs en tránsito
+        // Enlace clickeable para OCs en tránsito
         let trHtml = '-';
         if (p.enTransito > 0) {
             trHtml = `<span class="clickable-sub" style="text-decoration:underline; font-size:12px; cursor:pointer;" onclick="openInTransitDetails('${p.code}')" title="Ver detalle de OCs en tránsito">+${p.enTransito}</span>`;
@@ -2186,8 +2228,8 @@ function processAndRenderPlanner() {
     }).join('');
 }
 
-// Listeners Planner Filtros de renderizado
-['pl-suggest-months', 'pl-safety-stock', 'pl-stock-filter', 'pl-status-filter'].forEach(id => {
+// Listeners Planner Filtros de renderizado (NUEVOS AGREGADOS)
+['pl-suggest-months', 'pl-safety-stock', 'pl-stock-filter', 'pl-status-filter', 'pl-proveedor-filter', 'pl-oc-filter'].forEach(id => {
     document.getElementById(id).addEventListener('change', processAndRenderPlanner);
 });
 ['pl-date-start', 'pl-date-end', 'pl-warehouse-select'].forEach(id => {
@@ -2402,6 +2444,7 @@ function handleProveedoresFile(file) {
                 });
                 
                 saveToDB('PROVEEDORES', PENDING_ORDERS); // Guardar en memoria
+                updateProveedorDropdown(); // Actualizar menú desplegable
                 
                 document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Cargadas (${totalPending} líneas en tránsito)</span>`;
                 
