@@ -349,7 +349,6 @@
           </div>
           <div class="divider-v"></div>
           <div style="display:flex; gap:4px;">
-              <!-- ATENCIÓN: ATRIBUTOS FOR RESTAURADOS -->
               <label for="excel-upload-admin" class="btn-upload" title="Cargar archivo Administradora">
                   📥 Cargar ADM <input type="file" id="excel-upload-admin" accept=".xlsx, .xls" style="display:none" onclick="this.value=null;">
               </label>
@@ -1445,7 +1444,7 @@ function updateDashboardKPIs(processedResult) {
   }
 
   updateComparadorDropdown(); 
-  initListadoDropdowns(); // NUEVO: Inicializar filtros de Listado
+  initListadoDropdowns(); 
   renderTable();
 }
 
@@ -1769,6 +1768,7 @@ function renderTable() {
   }).join('');
 }
 
+function setLocalFilter(f, el) { currentLocalFilter = f; document.querySelectorAll('.controls .filter-btn').forEach(b => b.classList.remove('active')); if(el) el.classList.add('active'); renderTable(); }
 function sortByCol(col) { if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; } document.querySelectorAll('th').forEach(th => th.classList.remove('sorted')); renderTable(); }
 function sortBy(col) { sortCol = col; sortAsc = false; renderTable(); }
 
@@ -2532,7 +2532,6 @@ async function fetchOCsFromGoogle(silent = false) {
     }
 }
 
-// RESTAURAR LOS EVENT LISTENERS DE LOS BOTONES
 document.getElementById('excel-upload-admin').addEventListener('change', e => handleFile(e.target.files[0], 'ADMIN'));
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
 
