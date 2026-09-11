@@ -1313,6 +1313,122 @@ function processData(jsonData, realStockMap) {
 /* =====================================================================
    5. RENDERIZADO DE GRÁFICOS Y TABLA PRINCIPAL
 ===================================================================== */
+function renderPieChart(canvasId, labels, data, colors, hideLegend = false) {
+  if(chartInstances[canvasId]) chartInstances[canvasId].destroy(); const ctx = document.getElementById(canvasId).getContext('2d');
+  
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'pie', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 1.5, borderColor: getCssVar('--surface', '#1e3150') }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      onClick: (e, elements, chart) => { 
+          if (elements.length > 0) { 
+              const match = chart.data.labels[elements[0].index].match(/^\[(.*?)\]/); 
+              if (match) showProductModal(match[1]); 
+          } 
+      },
+      onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+      plugins: { 
+          legend: { display: !hideLegend, position: 'right', labels: { color: getCssVar('--text', '#fff'), font: {size: 11}, boxWidth: 10, padding: 10 } }, 
+          tooltip: { 
+              backgroundColor: getCssVar('--surface2', '#243c60'), borderColor: getCssVar('--border', '#33507b'), borderWidth: 0.5, titleColor: getCssVar('--text', '#fff'), bodyColor: getCssVar('--text', '#fff'), padding: 12, cornerRadius: 8, 
+              callbacks: { 
+                  title: function() { return ''; }, 
+                  label: function(ctx) { 
+                      const p = PROCESSED_DATA[ctx.dataIndex]; 
+                      const descCompleta = p ? p.descripcion : ctx.label;
+                      let valStr = ' ' + fmt(ctx.raw) + ' un.';
+                      if (canvasId === 'chart-val' || canvasId === 'chart-abc') valStr = ' $' + fmt(ctx.raw);
+                      return `${descCompleta}: ${valStr}`; 
+                  } 
+              } 
+          } 
+      }
+    }
+  });
+}
+
+function renderBarChart(canvasId, labels, data1, label1, color1, data2, label2, color2) {
+  if(chartInstances[canvasId]) chartInstances[canvasId].destroy(); const ctx = document.getElementById(canvasId).getContext('2d');
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'bar', data: { labels: labels, datasets: [{ label: label1, data: data1, backgroundColor: color1, borderRadius: 4 }, { label: label2, data: data2, backgroundColor: color2, borderRadius: 4 }] },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      onClick: (e, elements, chart) => { 
+          if (elements.length > 0) { 
+              const match = chart.data.labels[elements[0].index].match(/^\[(.*?)\]/); 
+              if (match) showProductModal(match[1]); 
+          } 
+      },
+      onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+      plugins: { legend: { position: 'top', labels: { color: getCssVar('--text'), font: {size: 11}, boxWidth: 10 } }, tooltip: { backgroundColor: getCssVar('--surface2'), borderColor: getCssVar('--border'), borderWidth: 0.5, titleColor: getCssVar('--text'), bodyColor: getCssVar('--text'), padding: 12, cornerRadius: 8 } },
+      scales: { 
+          x: { title: { display: false }, grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { font: {size: 10}, color: getCssVar('--text-muted') } }, 
+          y: { title: { display: false }, grid: { display: false }, ticks: { color: getCssVar('--text'), font: {size: 11, weight: '500'} } } 
+      }
+    }
+  });
+}
+
+function renderLineChart(canvasId, labels, data, labelName, color, rawLabels) {
+  if(chartInstances[canvasId]) chartInstances[canvasId].destroy(); const ctx = document.getElementById(canvasId).getContext('2d');
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'line', data: { labels: labels, datasets: [{ label: labelName, data: data, borderColor: color, backgroundColor: getCssVar('--accent-glow', 'rgba(165,196,212,0.15)'), borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6 }] },
+    options: { 
+      responsive: true, maintainAspectRatio: false, 
+      onClick: (e, elements, chart) => {
+          if (elements.length > 0 && rawLabels) { const idx = elements[0].index; openTimelineModal(rawLabels[idx], labels[idx]); }
+      },
+      onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: getCssVar('--surface2'), borderColor: getCssVar('--border'), borderWidth: 0.5, titleColor: getCssVar('--text'), bodyColor: getCssVar('--text'), padding: 12, cornerRadius: 8, callbacks: { label: function(ctx) { return ' ' + fmt(ctx.raw) + ' transacciones'; } } } }, 
+      scales: { 
+          x: { title: { display: false }, grid: { display: false }, ticks: { color: getCssVar('--text-muted', '#a5c4d4'), font: {size: 11} } }, 
+          y: { title: { display: false }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: getCssVar('--text-muted', '#a5c4d4'), font: {size: 11} } } 
+      } 
+    }
+  });
+}
+
+function renderParetoChart(canvasId, labels, barData, lineData, barColor, lineColor) {
+    if(chartInstances[canvasId]) chartInstances[canvasId].destroy(); const ctx = document.getElementById(canvasId).getContext('2d');
+    chartInstances[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { type: 'line', label: '% Acumulado', data: lineData, borderColor: lineColor, backgroundColor: 'transparent', borderWidth: 2, yAxisID: 'y1', pointRadius: 2, pointHoverRadius: 5 },
+                { type: 'bar', label: 'Costo Movido ($)', data: barData, backgroundColor: barColor, borderRadius: 2, yAxisID: 'y' }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            onClick: (e, elements, chart) => { 
+                if (elements.length > 0) { 
+                    const match = chart.data.labels[elements[0].index].match(/^\[(.*?)\]/); 
+                    if (match) showProductModal(match[1]); 
+                } 
+            },
+            onHover: (e, elements) => { e.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+            plugins: { 
+                legend: { position: 'top', labels: { color: getCssVar('--text'), font: {size: 10}, boxWidth: 10 } },
+                tooltip: { 
+                    backgroundColor: getCssVar('--surface2'), borderColor: getCssVar('--border'), borderWidth: 0.5, titleColor: getCssVar('--text'), bodyColor: getCssVar('--text'), padding: 10, cornerRadius: 8,
+                    callbacks: {
+                        label: function(ctx) {
+                            if(ctx.datasetIndex === 0) return ` ${ctx.raw.toFixed(1)}%`;
+                            return ` $${fmt(ctx.raw)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { ticks: { display: false }, grid: { display: false } },
+                y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: getCssVar('--text-muted'), font:{size:9}, callback: function(val) { return '$' + fmt(val/1000000) + 'M'; } } },
+                y1: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: 0, max: 100, ticks: { color: lineColor, font:{size:9}, callback: function(val) { return val + '%'; } } }
+            }
+        }
+    });
+}
+
 function initListadoDropdowns() {
     const familias = new Set();
     const proveedores = new Set();
@@ -1566,7 +1682,6 @@ function openTimelineModal(key, displayLabel) {
     document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
-// NUEVO: Función para mostrar el detalle de las OCs pendientes
 function openInTransitDetails(codigo) {
     const orders = PENDING_ORDERS[codigo] || [];
     if(orders.length === 0) return;
@@ -1602,7 +1717,6 @@ function openInTransitDetails(codigo) {
     document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
-// LÓGICA DE ORDENAMIENTO EN MODAL
 function renderModalTable() {
     const tbody = document.getElementById('rm-tbody');
     
@@ -1709,7 +1823,7 @@ function openDetailsModal(type) {
 
 function closeRankingModal() { document.getElementById('ranking-modal').classList.add('hidden'); }
 
-// NUEVO: Función filtrada por los dropdowns en la pestaña Listado
+// LÓGICA DE FILTRADO PARA LA PESTAÑA LISTADO Y ALERTAS
 function getLocalFiltered() {
   let data = [...PROCESSED_DATA];
   
@@ -1722,7 +1836,7 @@ function getLocalFiltered() {
   if (selProv !== 'TODOS') data = data.filter(p => p.proveedores_array.includes(selProv));
   
   if (selMov === 'CRITICOS') data = data.filter(p => !p.sin_movimiento_6m && p.dias_para_oc !== null && p.dias_para_oc <= 15);
-  if (selMov === 'SIN_3M') data = data.filter(p => p.sin_movimiento_3m); // Incluye también a los > 6 meses
+  if (selMov === 'SIN_3M') data = data.filter(p => p.sin_movimiento_3m); 
   if (selMov === 'SIN_6M') data = data.filter(p => p.sin_movimiento_6m);
 
   if (q) data = data.filter(p => p.codigo.toLowerCase().includes(q) || p.descripcion.toLowerCase().includes(q));
@@ -1746,7 +1860,6 @@ function renderTable() {
   if (data.length === 0) { empty.style.display = ''; tbody.innerHTML = ''; return; }
   empty.style.display = 'none';
   tbody.innerHTML = data.map(p => {
-    // NUEVA LÓGICA DE ESTILOS PARA ESTANCADOS (+3 y +6)
     const rowCls = p.sin_movimiento_6m ? 'stagnant' : (p.sin_movimiento_3m ? 'warning-row' : ''); 
     const statePill = p.sin_movimiento_6m ? '<span class="pill-stagnant">⚠ +6 meses</span>' 
                     : (p.sin_movimiento_3m ? '<span class="pill-stagnant" style="color:var(--sys-orange);">⚠ +3 meses</span>' 
@@ -1768,11 +1881,17 @@ function renderTable() {
   }).join('');
 }
 
-function setLocalFilter(f, el) { currentLocalFilter = f; document.querySelectorAll('.controls .filter-btn').forEach(b => b.classList.remove('active')); if(el) el.classList.add('active'); renderTable(); }
+function setLocalFilter(f, el) { 
+    if(f === 'all') document.getElementById('lst-movimiento').value = 'TODOS';
+    if(f === 'criticos') document.getElementById('lst-movimiento').value = 'CRITICOS';
+    if(f === 'stagnant') document.getElementById('lst-movimiento').value = 'SIN_6M';
+    document.querySelectorAll('.controls .filter-btn').forEach(b => b.classList.remove('active')); 
+    if(el) el.classList.add('active'); 
+    renderTable(); 
+}
 function sortByCol(col) { if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; } document.querySelectorAll('th').forEach(th => th.classList.remove('sorted')); renderTable(); }
 function sortBy(col) { sortCol = col; sortAsc = false; renderTable(); }
 
-// NUEVO: Exportación a Excel dedicada para la pestaña de Listado
 function exportToExcelListado() {
     const data = sortTableData(getLocalFiltered());
     if (data.length === 0) { alert('No hay datos para exportar.'); return; }
@@ -1805,8 +1924,7 @@ function exportToExcelListado() {
         ]);
     });
     
-    // Inyectar fila de Totales
-    aoa.push([]); // fila en blanco para separar
+    aoa.push([]); 
     aoa.push(['TOTALES', '', '', '', '', '', sumStock, Math.round(sumSalidas), sumCompras, '', '', '', sumValorInv, '', '']);
     
     const ws = XLSX.utils.aoa_to_sheet(aoa);
@@ -1866,112 +1984,6 @@ function updateComparador() {
             <td class="num currency" style="text-align:right;">${fmtCLPFull(p.valor_inventario)}</td>
         </tr>`;
     }).join('');
-}
-
-// MODAL FLOTANTE DETALLE PRODUCTO
-function showProductModal(codigo) {
-    const meta = GLOBAL_METADATA.get(codigo); if(!meta) return;
-    document.getElementById('modal-title').textContent = codigo; document.getElementById('modal-desc').textContent = meta.descripcion;
-    let compras = 0, ajPos = 0, ajNeg = 0, transf = 0;
-    CURRENT_FILTERED_ROWS.forEach(row => {
-        const c = String(getCol(row, COL_CODIGO) || '').trim();
-        if (c === codigo) {
-            const mov = String(getCol(row, COL_MOV) || '').trim().toUpperCase(); const qty = parseFloat(getCol(row, COL_CANT)) || 0;
-            if (mov.includes('COMPRA')) compras += qty; else if (mov.includes('TRANSFERENCIA') || mov.includes('TRASLADO')) transf += Math.abs(qty);
-            else if (mov.includes('AJUSTE')) { if (mov.includes('NEGATIVO')) ajNeg += Math.abs(qty); else if (mov.includes('POSITIVO')) ajPos += Math.abs(qty); else { if (qty < 0) ajNeg += Math.abs(qty); else ajPos += Math.abs(qty); } }
-        }
-    });
-    const prodData = PROCESSED_DATA.find(p => p.codigo === codigo); const stockActual = prodData ? prodData.stock_actual : 0;
-    
-    document.getElementById('m-stock').textContent = fmt(stockActual); 
-    document.getElementById('m-compras').textContent = fmt(compras);
-    document.getElementById('m-ajustes-pos').textContent = fmt(ajPos); 
-    document.getElementById('m-ajustes-neg').textContent = fmt(ajNeg); 
-    document.getElementById('m-transf').textContent = fmt(transf);
-
-    // Asignar eventos onClick a las cajas del modal
-    document.querySelector('.m-stock').onclick = () => openMovementDetails(codigo, 'stock');
-    document.querySelector('.m-comp').onclick = () => openMovementDetails(codigo, 'compras');
-    document.querySelector('.m-tra').onclick = () => openMovementDetails(codigo, 'transferencias');
-    document.querySelector('.m-ajp').onclick = () => openMovementDetails(codigo, 'ajustes-pos');
-    document.querySelector('.m-ajn').onclick = () => openMovementDetails(codigo, 'ajustes-neg');
-
-    document.getElementById('product-modal').classList.remove('hidden');
-}
-
-function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
-
-function openMovementDetails(codigo, tipo) {
-    let details = [];
-    
-    // Extraer y filtrar las filas exactas
-    CURRENT_FILTERED_ROWS.forEach(row => {
-        const c = String(getCol(row, COL_CODIGO) || '').trim();
-        if (c === codigo) {
-            const mov = String(getCol(row, COL_MOV) || '').trim().toUpperCase(); 
-            const qty = parseFloat(getCol(row, COL_CANT)) || 0;
-            const dateObj = parseExcelDate(getCol(row, COL_FECHA));
-            const dateStr = dateObj ? dateObj.toLocaleDateString('es-CL') : 'Sin Fecha';
-            const doc = String(getCol(row, COL_DOC_NUM) || 'S/N').trim();
-            const buyer = String(getCol(row, COL_COMP) || 'SIN ESPECIFICAR').trim();
-
-            let include = false;
-            // Reglas lógicas para agrupar los movimientos tal como se calcularon en el resumen
-            if (tipo === 'compras' && mov.includes('COMPRA')) include = true;
-            else if (tipo === 'transferencias' && (mov.includes('TRANSFERENCIA') || mov.includes('TRASLADO'))) include = true;
-            else if (tipo === 'ajustes-pos' && mov.includes('AJUSTE') && !mov.includes('NEGATIVO') && (mov.includes('POSITIVO') || qty >= 0)) include = true;
-            else if (tipo === 'ajustes-neg' && mov.includes('AJUSTE') && (mov.includes('NEGATIVO') || qty < 0)) include = true;
-            else if (tipo === 'stock') include = true; // Stock actual muestra todos los movimientos del período
-
-            if (include) { details.push({ dateObj, dateStr, doc, mov, qty, buyer }); }
-        }
-    });
-
-    // Ordenar de la transacción más reciente a la más antigua
-    details.sort((a, b) => (b.dateObj || 0) - (a.dateObj || 0));
-
-    const titles = {
-        'stock': 'Historial Completo (Período)', 'compras': 'Detalle de Compras', 'transferencias': 'Detalle de Transferencias', 'ajustes-pos': 'Detalle de Ajustes Positivos', 'ajustes-neg': 'Detalle de Ajustes Negativos'
-    };
-
-    // Armar la cabecera de la tabla
-    const thead = document.getElementById('rm-thead');
-    thead.innerHTML = `
-        <tr>
-            <th style="width:40px; text-align:center;">#</th>
-            <th style="width:80px;">Fecha</th>
-            <th style="width:100px;">Documento</th>
-            <th style="width:160px;">Tipo Movimiento</th>
-            <th>Usuario / Referencia</th>
-            <th style="text-align:right;">Cantidad</th>
-        </tr>
-    `;
-    
-    document.getElementById('rm-title').textContent = `${titles[tipo]} - ${codigo}`;
-    const meta = GLOBAL_METADATA.get(codigo);
-    document.getElementById('rm-desc').textContent = meta ? meta.descripcion : '';
-    
-    // Armar el cuerpo de la tabla
-    const tbody = document.getElementById('rm-tbody');
-    tbody.innerHTML = details.map((d, i) => {
-        let qtyColor = d.qty < 0 ? 'var(--sys-red)' : 'var(--sys-green)';
-        if(tipo === 'compras' && d.qty < 0) qtyColor = 'var(--sys-orange)'; // Destacar anulaciones de compra
-        
-        return `
-        <tr style="border-bottom: 1px solid var(--border-light); background: var(--surface);">
-            <td style="text-align:center; color: var(--text-muted); font-size: 11px;">${i+1}</td>
-            <td style="color: var(--text-muted); font-size: 11px;">${d.dateStr}</td>
-            <td style="font-size: 11px; color: var(--text-muted); font-family:monospace;">${d.doc}</td>
-            <td style="font-size: 11px; font-weight:700; color:var(--text);">${d.mov}</td>
-            <td style="font-size: 11px;" title="${d.buyer}">${truncateString(d.buyer, 30)}</td>
-            <td style="text-align:right; font-weight:800; font-family:monospace; color: ${qtyColor};">${fmt(d.qty)} un.</td>
-        </tr>`;
-    }).join('');
-    
-    if(details.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--text-muted);">No hay transacciones registradas de este tipo.</td></tr>`; }
-    
-    // Abrir el modal de lista
-    document.getElementById('ranking-modal').classList.remove('hidden');
 }
 
 /* =====================================================================
@@ -2532,6 +2544,7 @@ async function fetchOCsFromGoogle(silent = false) {
     }
 }
 
+// RESTAURAR LOS EVENT LISTENERS DE LOS BOTONES
 document.getElementById('excel-upload-admin').addEventListener('change', e => handleFile(e.target.files[0], 'ADMIN'));
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
 
