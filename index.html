@@ -102,7 +102,7 @@
   
   .divider-v { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
 
-  .btn-upload { background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; height: 26px; text-transform: uppercase;}
+  .btn-upload { background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; height: 26px; text-transform: uppercase; border: 1px solid transparent;}
   .btn-upload:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
   
   .btn-clear { background: transparent; color: var(--sys-red); border: 1px solid transparent; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; text-transform: uppercase; height: 26px;}
@@ -153,7 +153,7 @@
   .dropdown-search input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; height: 28px; color: var(--text); font-size: 11px; outline: none; }
   .dropdown-search input:focus { border-color: var(--accent); }
 
-  /* Custom Toggle Switch Slim - ACTUALIZADO */
+  /* Custom Toggle Switch Slim */
   .toggle-wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); border: 1px solid var(--border); height: 32px; transition: 0.2s; white-space: nowrap;}
   .toggle-wrap:hover { border-color: var(--accent); }
   .toggle-labels { display: flex; flex-direction: column; justify-content: center; flex-shrink: 0;}
@@ -353,9 +353,10 @@
               <label for="excel-upload-inmob" class="btn-upload" title="Cargar archivo Inmobiliaria">
                   📥 Cargar INM <input type="file" id="excel-upload-inmob" accept=".xlsx, .xls" style="display:none">
               </label>
-              <label for="excel-upload-proveedores" class="btn-upload" title="Cargar archivo de Seguimiento Proveedores" style="background: var(--sys-orange); color: #fff; border-color: var(--sys-orange);">
-                  🚚 Cargar OC <input type="file" id="excel-upload-proveedores" accept=".xlsx, .xls" style="display:none">
-              </label>
+              <!-- NUEVO: BOTÓN DE SINCRONIZACIÓN AUTOMÁTICA CON GOOGLE SHEETS -->
+              <button class="btn-upload" onclick="fetchOCsFromGoogle()" title="Descargar OCs en tránsito directamente desde Google Sheets" style="background: var(--sys-orange); color: #fff; border-color: var(--sys-orange); border:none;">
+                  🔄 Sincronizar OC
+              </button>
               <button class="btn-clear" onclick="clearAllData()" title="Limpiar todos los datos">
                   🗑️ Limpiar
               </button>
@@ -649,7 +650,7 @@
               <select id="pl-stock-filter" class="pl-select"><option value="TODOS">Ver todo el stock</option><option value="SIN_STOCK">Sin Stock (Stock = 0)</option><option value="CON_STOCK">Con Stock (> 0)</option></select>
           </div>
           
-          <!-- NUEVOS FILTROS OC -->
+          <!-- FILTROS OC -->
           <div class="pl-filter-col">
               <label class="pl-label">Proveedor</label>
               <select id="pl-proveedor-filter" class="pl-select">
@@ -815,7 +816,7 @@ let currentLocalFilter = 'all'; let currentSearch = ''; let sortCol = 'codigo'; 
 // Estado Modal Sorting
 let modalData = []; let modalSortCol = 'col4'; let modalSortAsc = false; let currentModalType = '';
 
-// NUEVO: Memoria para el archivo de seguimiento de proveedores (OCs en tránsito)
+// Memoria para el archivo de seguimiento de proveedores (OCs en tránsito)
 let PENDING_ORDERS = {}; 
 
 // Estado dual para el Planificador de Compras
@@ -971,7 +972,6 @@ function clearAllData() {
         document.getElementById('main-content').classList.add('hidden');
         document.getElementById('welcome-message').classList.remove('hidden');
         document.getElementById('excel-upload-admin').value = ''; document.getElementById('excel-upload-inmob').value = '';
-        document.getElementById('excel-upload-proveedores').value = '';
     }
 }
 
@@ -1990,7 +1990,7 @@ function generateMonthRange(start, end) {
     return months;
 }
 
-// NUEVO: Función para mantener actualizado el filtro de proveedores
+// Función para mantener actualizado el filtro de proveedores
 function updateProveedorDropdown() {
     const proveedores = new Set();
     
@@ -2404,111 +2404,109 @@ function handleFile(file, type) {
     reader.readAsArrayBuffer(file);
 }
 
-// LÓGICA DE EXTRACCIÓN DE OC EN TRÁNSITO DETALLADA
-function handleProveedoresFile(file) {
-    if (!file) return;
-    document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-yellow)">⏳ Procesando OCs en tránsito...</span>`;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-        setTimeout(() => {
-            try {
-                const data = new Uint8Array(ev.target.result); 
-                const workbook = XLSX.read(data, {type: 'array'});
+// LÓGICA DE EXTRACCIÓN AUTOMÁTICA DESDE GOOGLE SHEETS
+async function fetchOCsFromGoogle() {
+    document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-yellow)">⏳ Descargando OCs desde la nube...</span>`;
+    try {
+        // Enlace público generado desde Google Sheets (Publish to web -> xlsx)
+        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcBUP7XM6Yj4Tnc8ga749ebKTRWA_-aTlkxtCvbUMrxs0UDk8gB8XfP8BK6QoOXQ/pub?output=xlsx";
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Error en red o enlace no disponible");
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, {type: 'array'});
+        
+        PENDING_ORDERS = {}; // Reiniciar memoria de OCs
+        let totalPending = 0;
+        
+        // Iterar por todas las pestañas de proveedores
+        workbook.SheetNames.forEach(sheetName => {
+            // Ignorar hojas que sean de carga o resumen
+            if (sheetName.toUpperCase().includes('CARGAR') || sheetName.toUpperCase().includes('RESUMEN')) return;
+            
+            // Extraer los datos como matriz cruda para escanear cabeceras dinámicas
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header: 1, defval: null});
+            
+            let headerIndex = -1; 
+            let cols = { codigo: -1, pendiente: -1, estado: -1, oc: -1, solicitado: -1, recibido: -1, fecha: -1 };
+            
+            // Buscar en las primeras 10 filas dónde están las cabeceras importantes
+            for(let i=0; i<Math.min(10, rows.length); i++) {
+                const row = rows[i];
+                if(!row) continue;
                 
-                PENDING_ORDERS = {}; // Reiniciar memoria de OCs
-                let totalPending = 0;
+                for(let j=0; j<row.length; j++) {
+                    const val = String(row[j] || '').toUpperCase().trim();
+                    if(val === 'CÓDIGO' || val === 'CODIGO') cols.codigo = j;
+                    if(val.includes('PENDIENTE')) cols.pendiente = j;
+                    if(val === 'ESTADO') cols.estado = j;
+                    if(val === 'OC') cols.oc = j;
+                    if(val === 'SOLICITADO') cols.solicitado = j;
+                    if(val === 'RECIBIDO') cols.recibido = j;
+                    if(val === 'FECHA OC' || val === 'FECHA') cols.fecha = j;
+                }
                 
-                // Iterar por todas las pestañas de proveedores
-                workbook.SheetNames.forEach(sheetName => {
-                    // Ignorar hojas que sean de carga o resumen
-                    if (sheetName.toUpperCase().includes('CARGAR') || sheetName.toUpperCase().includes('RESUMEN')) return;
-                    
-                    // Extraer los datos como matriz cruda para escanear cabeceras dinámicas
-                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header: 1, defval: null});
-                    
-                    let headerIndex = -1; 
-                    let cols = { codigo: -1, pendiente: -1, estado: -1, oc: -1, solicitado: -1, recibido: -1, fecha: -1 };
-                    
-                    // Buscar en las primeras 10 filas dónde están las cabeceras importantes
-                    for(let i=0; i<Math.min(10, rows.length); i++) {
-                        const row = rows[i];
-                        if(!row) continue;
-                        
-                        for(let j=0; j<row.length; j++) {
-                            const val = String(row[j] || '').toUpperCase().trim();
-                            if(val === 'CÓDIGO' || val === 'CODIGO') cols.codigo = j;
-                            if(val.includes('PENDIENTE')) cols.pendiente = j;
-                            if(val === 'ESTADO') cols.estado = j;
-                            if(val === 'OC') cols.oc = j;
-                            if(val === 'SOLICITADO') cols.solicitado = j;
-                            if(val === 'RECIBIDO') cols.recibido = j;
-                            if(val === 'FECHA OC' || val === 'FECHA') cols.fecha = j;
-                        }
-                        
-                        if(cols.codigo !== -1 && cols.pendiente !== -1) {
-                            headerIndex = i;
-                            break;
-                        }
-                    }
-                    
-                    // Si encontró las cabeceras, extraer la información detallada
-                    if (headerIndex !== -1) {
-                        for(let i = headerIndex + 1; i < rows.length; i++) {
-                            const row = rows[i];
-                            if(!row || !row[cols.codigo]) continue; // Fila vacía o sin código
-                            
-                            const code = String(row[cols.codigo]).trim();
-                            const estado = cols.estado !== -1 ? String(row[cols.estado] || '').toLowerCase().trim() : 'pendiente';
-                            const cantPendiente = parseFloat(row[cols.pendiente]) || 0;
-                            
-                            // Solo sumar si hay cantidad pendiente y el estado no es ni entregado ni anulado ni recibido
-                            if (cantPendiente > 0 && !estado.includes('entregado') && !estado.includes('anulado') && !estado.includes('recibido')) {
-                                if (!PENDING_ORDERS[code]) PENDING_ORDERS[code] = [];
-                                
-                                // Parsear la fecha correctamente
-                                let rawFecha = cols.fecha !== -1 ? row[cols.fecha] : null;
-                                let fechaStr = "S/F";
-                                if (rawFecha) {
-                                    let fObj = parseExcelDate(rawFecha);
-                                    if (fObj) fechaStr = fObj.toLocaleDateString('es-CL');
-                                    else fechaStr = String(rawFecha).substring(0, 10);
-                                }
-
-                                // Empaquetar el detalle completo
-                                PENDING_ORDERS[code].push({
-                                    empresa: sheetName,
-                                    oc: cols.oc !== -1 ? String(row[cols.oc] || 'S/N') : 'S/N',
-                                    solicitado: cols.solicitado !== -1 ? parseFloat(row[cols.solicitado]) || 0 : 0,
-                                    recibido: cols.recibido !== -1 ? parseFloat(row[cols.recibido]) || 0 : 0,
-                                    fecha: fechaStr,
-                                    pendiente: cantPendiente
-                                });
-                                
-                                totalPending++;
-                            }
-                        }
-                    }
-                });
-                
-                saveToDB('PROVEEDORES', PENDING_ORDERS); // Guardar en memoria
-                updateProveedorDropdown(); // Actualizar menú desplegable
-                
-                document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Cargadas (${totalPending} líneas en tránsito)</span>`;
-                
-                // Actualizar planificador si está activo para que refleje los cambios inmediatamente
-                if(PROCESSED_DATA.length > 0) processAndRenderPlanner();
-                
-            } catch(err) { 
-                document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-red)">❌ Error OC: ${err.message}</span>`; 
+                if(cols.codigo !== -1 && cols.pendiente !== -1) {
+                    headerIndex = i;
+                    break;
+                }
             }
-        }, 100);
-    };
-    reader.readAsArrayBuffer(file);
+            
+            // Si encontró las cabeceras, extraer la información detallada
+            if (headerIndex !== -1) {
+                for(let i = headerIndex + 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if(!row || !row[cols.codigo]) continue; // Fila vacía o sin código
+                    
+                    const code = String(row[cols.codigo]).trim();
+                    const estado = cols.estado !== -1 ? String(row[cols.estado] || '').toLowerCase().trim() : 'pendiente';
+                    const cantPendiente = parseFloat(row[cols.pendiente]) || 0;
+                    
+                    // Solo sumar si hay cantidad pendiente y el estado no es ni entregado ni anulado ni recibido
+                    if (cantPendiente > 0 && !estado.includes('entregado') && !estado.includes('anulado') && !estado.includes('recibido')) {
+                        if (!PENDING_ORDERS[code]) PENDING_ORDERS[code] = [];
+                        
+                        // Parsear la fecha correctamente
+                        let rawFecha = cols.fecha !== -1 ? row[cols.fecha] : null;
+                        let fechaStr = "S/F";
+                        if (rawFecha) {
+                            let fObj = parseExcelDate(rawFecha);
+                            if (fObj) fechaStr = fObj.toLocaleDateString('es-CL');
+                            else fechaStr = String(rawFecha).substring(0, 10);
+                        }
+
+                        // Empaquetar el detalle completo
+                        PENDING_ORDERS[code].push({
+                            empresa: sheetName,
+                            oc: cols.oc !== -1 ? String(row[cols.oc] || 'S/N') : 'S/N',
+                            solicitado: cols.solicitado !== -1 ? parseFloat(row[cols.solicitado]) || 0 : 0,
+                            recibido: cols.recibido !== -1 ? parseFloat(row[cols.recibido]) || 0 : 0,
+                            fecha: fechaStr,
+                            pendiente: cantPendiente
+                        });
+                        
+                        totalPending++;
+                    }
+                }
+            }
+        });
+        
+        saveToDB('PROVEEDORES', PENDING_ORDERS); // Guardar en memoria
+        updateProveedorDropdown(); // Actualizar menú desplegable
+        
+        document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Sincronizadas (${totalPending} líneas en tránsito)</span>`;
+        
+        // Actualizar planificador si está activo para que refleje los cambios inmediatamente
+        if(PROCESSED_DATA.length > 0) processAndRenderPlanner();
+
+    } catch(err) {
+        document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-red)">❌ Error de sincronización: ${err.message}</span>`; 
+    }
 }
 
 document.getElementById('excel-upload-admin').addEventListener('change', e => handleFile(e.target.files[0], 'ADMIN'));
 document.getElementById('excel-upload-inmob').addEventListener('change', e => handleFile(e.target.files[0], 'INMOB'));
-document.getElementById('excel-upload-proveedores').addEventListener('change', e => handleProveedoresFile(e.target.files[0]));
 
 // INIT Y RECUPERACIÓN DE MEMORIA
 document.body.setAttribute('data-theme', 'corporate');
