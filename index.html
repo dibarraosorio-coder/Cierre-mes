@@ -349,10 +349,10 @@
           </div>
           <div class="divider-v"></div>
           <div style="display:flex; gap:4px;">
-              <label for="excel-upload-admin" class="btn-upload" title="Cargar archivo Administradora">
+              <label class="btn-upload" title="Cargar archivo Administradora">
                   📥 Cargar ADM <input type="file" id="excel-upload-admin" accept=".xlsx, .xls" style="display:none" onclick="this.value=null;">
               </label>
-              <label for="excel-upload-inmob" class="btn-upload" title="Cargar archivo Inmobiliaria">
+              <label class="btn-upload" title="Cargar archivo Inmobiliaria">
                   📥 Cargar INM <input type="file" id="excel-upload-inmob" accept=".xlsx, .xls" style="display:none" onclick="this.value=null;">
               </label>
               <button class="btn-upload" onclick="fetchOCsFromGoogle()" title="Descargar OCs en tránsito directamente desde Google Sheets" style="background: var(--sys-orange); color: #fff; border-color: var(--sys-orange); border:none;">
@@ -1237,6 +1237,23 @@ function processData(jsonData, realStockMap) {
     }
   });
 
+  // INYECCIÓN DE PRODUCTOS DESDE OC (Garantiza que aparezcan en Listado aunque no tengan historial)
+  Object.keys(PENDING_ORDERS).forEach(codigo => {
+      if (!productsMap.has(codigo)) {
+          const meta = GLOBAL_METADATA.get(codigo) || { descripcion: `Art. ${codigo}`, precio: 0 };
+          productsMap.set(codigo, { 
+              codigo: codigo, 
+              descripcion: meta.descripcion, 
+              stock_actual: 0, 
+              total_comprado: 0, 
+              consumos_negativos: 0, 
+              ultimo_consumo_fecha: null, 
+              ultimo_precio: meta.precio, 
+              proveedores: new Set() 
+          });
+      }
+  });
+
   const timelineMap = new Map();
   if (minDate && maxDate) {
       const daysDiff = (maxDate - minDate) / (1000 * 60 * 60 * 24);
@@ -1258,15 +1275,30 @@ function processData(jsonData, realStockMap) {
   const finalTimelineMap = new Map();
   Array.from(timelineMap.keys()).sort().forEach(k => finalTimelineMap.set(k, timelineMap.get(k).size));
 
-  if (!minDate || !maxDate) return { finalData: [], minDate: new Date(), maxDate: new Date(), timelineMap: finalTimelineMap };
+  // Default maxDate to today if no history exists at all
+  if (!maxDate) maxDate = new Date();
+  if (!minDate) minDate = maxDate;
 
-  const totalDays = (maxDate - minDate) / (1000 * 60 * 60 * 24); const totalMonths = Math.max(1, totalDays / 30.44);
-  const hideStock0 = document.getElementById('flt-stock0').checked; const finalData = [];
+  const totalDays = (maxDate - minDate) / (1000 * 60 * 60 * 24); 
+  const totalMonths = Math.max(1, totalDays / 30.44);
+  const hideStock0 = document.getElementById('flt-stock0').checked; 
+  const finalData = [];
 
   productsMap.forEach(p => {
     p.stock_actual = realStockMap.has(p.codigo) ? realStockMap.get(p.codigo) : 0;
-    const isStockZero = Math.abs(p.stock_actual) < 0.0001; const isConsumoZero = Math.abs(p.consumos_negativos) < 0.0001;
-    if (hideStock0 && isStockZero) return; if (!hideStock0 && isStockZero && isConsumoZero && p.total_comprado <= 0) return; 
+    
+    // Check if it has pending orders
+    let isPendingOC = false;
+    if (PENDING_ORDERS[p.codigo]) {
+        PENDING_ORDERS[p.codigo].forEach(o => { if (o.pendiente > 0) isPendingOC = true; });
+    }
+
+    const isStockZero = Math.abs(p.stock_actual) < 0.0001; 
+    const isConsumoZero = Math.abs(p.consumos_negativos) < 0.0001;
+    
+    // Si hideStock0 está activo, ocultar si stock es 0, PERO mostrar si viene en camino (isPendingOC)
+    if (hideStock0 && isStockZero && !isPendingOC) return; 
+    if (!hideStock0 && isStockZero && isConsumoZero && p.total_comprado <= 0 && !isPendingOC) return; 
 
     let days_since = 999;
     if (p.ultimo_consumo_fecha) { days_since = (maxDate - p.ultimo_consumo_fecha) / (1000 * 60 * 60 * 24); }
@@ -2143,6 +2175,29 @@ function extractPlannerDataFromGlobal() {
         }
     });
 
+    // INYECTAR FANTASMAS DESDE OC (Mismo filtro estructural)
+    Object.keys(PENDING_ORDERS).forEach(code => {
+        if (!map[code]) {
+            let pBodega = 'BOD-GENERAL';
+            if (PENDING_ORDERS[code].length > 0) pBodega = PENDING_ORDERS[code][0].bodega;
+            
+            if(plParque !== 'TODOS' && !pBodega.startsWith(plParque)) return;
+            if(plWh !== 'TODAS' && pBodega !== plWh) return;
+
+            let desc = GLOBAL_METADATA.has(code) ? GLOBAL_METADATA.get(code).descripcion : `Art. ${code}`;
+            map[code] = { 
+                code: code, 
+                description: desc, 
+                stock: 0, 
+                monthlyConsumptions: {}, 
+                qKey: `PL__${code}`, 
+                receiptDates: [], 
+                proveedoresHist: new Set() 
+            };
+            targetMonths.forEach(m => map[code].monthlyConsumptions[m.val] = 0);
+        }
+    });
+
     PLANNER_DATA.records = Object.values(map);
     processAndRenderPlanner();
 }
@@ -2467,7 +2522,20 @@ async function fetchOCsFromGoogle(silent = false) {
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header: 1, defval: null});
             
             let headerIndex = -1; 
-            let cols = { codigo: -1, pendiente: -1, estado: -1, oc: -1, solicitado: -1, recibido: -1, fecha: -1 };
+            let cols = { codigo: -1, pendiente: -1, estado: -1, oc: -1, solicitado: -1, recibido: -1, fecha: -1, bodega: -1, descripcion: -1 };
+            
+            // EXTRAER NOMBRE DE LA EMPRESA (Busca "Empresa" en las primeras 10 filas)
+            let empresaName = sheetName;
+            for(let i=0; i<Math.min(10, rows.length); i++) {
+                if (rows[i] && rows[i][0] && String(rows[i][0]).toUpperCase().includes('EMPRESA')) {
+                    if (rows[i+1] && rows[i+1][0] && String(rows[i+1][0]).trim() !== '') {
+                        empresaName = String(rows[i+1][0]).trim();
+                    } else if (rows[i][1] && String(rows[i][1]).trim() !== '') {
+                        empresaName = String(rows[i][1]).trim();
+                    }
+                    break;
+                }
+            }
             
             // Buscar en las primeras 10 filas dónde están las cabeceras importantes
             for(let i=0; i<Math.min(10, rows.length); i++) {
@@ -2483,6 +2551,8 @@ async function fetchOCsFromGoogle(silent = false) {
                     if(val === 'SOLICITADO') cols.solicitado = j;
                     if(val === 'RECIBIDO') cols.recibido = j;
                     if(val === 'FECHA OC' || val === 'FECHA') cols.fecha = j;
+                    if(val === 'BODEGA' || val === 'ALMACEN' || val === 'ALMACÉN') cols.bodega = j;
+                    if(val === 'DESCRIPCIÓN' || val === 'DESCRIPCION') cols.descripcion = j;
                 }
                 
                 if(cols.codigo !== -1 && cols.pendiente !== -1) {
@@ -2514,13 +2584,23 @@ async function fetchOCsFromGoogle(silent = false) {
                             else fechaStr = String(rawFecha).substring(0, 10);
                         }
 
+                        // Agregar Metadatos Fantasmas al catálogo si no existen
+                        if (cols.descripcion !== -1) {
+                            const descOC = String(row[cols.descripcion] || '').trim();
+                            if (descOC && !GLOBAL_METADATA.has(code)) {
+                                let cleanDesc = descOC.replace(new RegExp(`^${code}[\\s\\|\\-\\.\\:]*`, 'i'), '').trim();
+                                GLOBAL_METADATA.set(code, { descripcion: cleanDesc || code, precio: 0, fecha_precio: null });
+                            }
+                        }
+
                         // Empaquetar el detalle completo
                         PENDING_ORDERS[code].push({
-                            empresa: sheetName,
+                            empresa: empresaName.toUpperCase(),
                             oc: cols.oc !== -1 ? String(row[cols.oc] || 'S/N') : 'S/N',
                             solicitado: cols.solicitado !== -1 ? parseFloat(row[cols.solicitado]) || 0 : 0,
                             recibido: cols.recibido !== -1 ? parseFloat(row[cols.recibido]) || 0 : 0,
                             fecha: fechaStr,
+                            bodega: cols.bodega !== -1 ? String(row[cols.bodega] || 'BOD-GENERAL').trim().toUpperCase() : 'BOD-GENERAL',
                             pendiente: cantPendiente
                         });
                         
@@ -2536,8 +2616,11 @@ async function fetchOCsFromGoogle(silent = false) {
         if(!silent) document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Sincronizadas (${totalPending} líneas en tránsito)</span>`;
         else document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-green)">✅ OCs Auto-Sincronizadas (${totalPending} líneas)</span>`;
         
-        // Actualizar planificador si está activo para que refleje los cambios inmediatamente
-        if(PROCESSED_DATA.length > 0) processAndRenderPlanner();
+        // Actualizar planificador y gráficas
+        if(PROCESSED_DATA.length > 0) {
+            applyGlobalFilters();
+            processAndRenderPlanner();
+        }
 
     } catch(err) {
         if(!silent) document.getElementById('upload-status').innerHTML = `<span style="color:var(--sys-red)">❌ Error de sincronización: ${err.message}</span>`; 
